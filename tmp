@@ -32,3 +32,35 @@ FUNC_ARG_LIST:
                 | EXPR { printf("FUNC_ARG_LIST(EXPR) detected.\n"); }
                 | EXPR ',' FUNC_ARG_LIST { printf("FUNC_ARG_LIST(EXPR,LIST) detected.\n"); }
                 ;
+
+
+
+int calculate(int x)
+{
+    int i = 1;
+    int sum = 0;
+    while(i <= x)
+    {
+        sum = sum + i;
+    }
+
+    return sum;
+}
+
+int main()
+{
+    x >;
+    int a = 0;
+    printf("Please input an integer between 1 and 100:\n");
+    scanf("%d", &a);
+
+    if(a < 1)
+        printf("The number is too small!");
+    else if (a > 100)
+        printf("The number is too large!");
+    else
+        printf("The sum is %d\n", calculate(a));
+    
+    return 0;
+
+}

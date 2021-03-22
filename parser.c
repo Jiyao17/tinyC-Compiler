@@ -61,11 +61,20 @@ int main(int argc, char* argv[])
         return TRUE;
     }
     
-    yyparse();
 
-    printf("\033[0;32m"); 
-    printf("\nParse succeeded!\n\n"); 
-    printf("\033[0m"); 
+    if (yyparse() == 0)
+    {
+        printf("\033[0;32m"); 
+        printf("\nParse succeeded!\n\n"); 
+        printf("\033[0m"); 
+    }
+    else
+    {
+        printf("\033[0;31m"); 
+        printf("\nParse failed!\n\n"); 
+        printf("\033[0m"); 
+    }
+
 
 
     return 0;

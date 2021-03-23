@@ -64,3 +64,38 @@ int main()
     return 0;
 
 }
+
+
+Node* makeNode(int nodeIndex, Node* lchild, Node* rchild)
+{
+        Node* node = malloc(sizeof(Node));
+        node->type = nodeIndex;
+        node->childNum = 2;
+        node->children[0] = lchild;
+        node->children[1] = rchild;
+
+}
+
+typedef struct{
+        char name[NAME_LEN_MAX];
+        int type;
+}Symbol;
+Symbol* symbolTable[TABLE_LEN_MAX];
+
+
+CONST:    TK_CONS_INT { int* pVal = malloc(sizeof(int)); *pVal = atoi(yytext()); $$ = makeLeaf(268, pVal); }
+        | TK_CONS_FLOAT { double* pVal = malloc(sizeof(double)); *pVal = atof(yytext()); $$ = makeLeaf(270, (int*)pVal); }
+        | TK_CONS_CHAR { char* pVal = malloc(sizeof(char)); *pVal = yytext()[0]; $$ = makeLeaf(269, (int*)pVal); }
+        | TK_CONS_STRING  { $$ = makeLeaf(271, (int*)yytext()); }
+        ;
+
+        void printNode(Node* node)
+{
+        printf("%d %s\n", node->type, node->pattern);
+}
+
+
+
+$$ = makeLeaf(0, "empty FUNC_VAR_DEF_LIST"); 
+
+$$ = $1; $$ = mergeChildren($$, $2); 

@@ -1,7 +1,12 @@
 
 
+YACC_FLAGS = --debug --verbose
+CFLAGS = 
+
 TARGET = parser
 OBJS = y.tab.o scanner.o parser.o
+
+
 
 
 # make parser
@@ -9,8 +14,8 @@ $(TARGET): $(OBJS)
 	gcc $^ -o $@
 
 y.tab.o: parser_productions.y
-	yacc -d parser_productions.y --debug --verbose
-	gcc -c y.tab.c -o $@
+	yacc -d parser_productions.y $(YACC_FLAGS)
+	gcc -c y.tab.c -o $@ -Wno-incompatible-pointer-types -Wno-int-conversion
 
 scanner.o: scanner_regex.l 
 	lex -t $^ > scanner.c
@@ -35,7 +40,7 @@ scanner_tester.o: scanner_tester.c
 
 .PHONY: clean
 clean:
-	rm -f scanner.c y.tab.c y.tab.h $(OBJS) $(TARGET) scanner_tester.o scanner
+	rm -f scanner.c y.tab.c y.tab.h y.output $(OBJS) $(TARGET) scanner_tester.o scanner
 
 
 

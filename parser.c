@@ -6,7 +6,9 @@
 #include "y.tab.h"
 #include "scanner.h"
 
-const char TK_TYPE_DETAIL[64][64] = 
+#include <string.h>
+
+const char TK_TYPE_DETAIL[64][32] = 
 {
     "NONE",
     // data type
@@ -51,6 +53,10 @@ const char TK_TYPE_DETAIL[64][64] =
     "TK_ERR"
 };
 
+struct Node;
+typedef struct Node Node;
+extern void printTree(Node* root, int indent_num);
+extern Node* root;
 
 
 int main(int argc, char* argv[])
@@ -75,6 +81,8 @@ int main(int argc, char* argv[])
         printf("\033[0m"); 
     }
 
+    printf("AST:\n");
+    printTree(root, 0);
 
 
     return 0;

@@ -1,16 +1,186 @@
 
 
 %{
-/*
-
-*/
-
-
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "scanner.h"
 
+#define NAME_LEN_MAX 64
+#define TABLE_LEN_MAX 1024*1024
+#define OPRAND_NUM_MAX 8
+
+static const char TK_TYPE_DETAIL[64][32] = 
+{
+    "NONE",
+    // data type
+    "TK_TYPE_VOID",
+    "TK_TYPE_INT",
+    "TK_TYPE_CHAR",
+    "TK_TYPE_FLOAT",
+    // control keyword
+    "TK_CTRL_IF",
+    "TK_CTRL_ELSE",
+    "TK_CTRL_WHILE",
+    "TK_CTRL_RETURN",
+    // constant
+    "TK_MAIN",
+    "TK_NAME_ID",
+    "TK_CONS_INT",
+    "TK_CONS_CHAR",
+    "TK_CONS_FLOAT",
+    "TK_CONS_STRING",
+    // operators
+    "TK_OPER_ADD",
+    "TK_OPER_SUB",
+    "TK_OPER_MUL",
+    "TK_OPER_DIV",
+
+    "TK_OPER_EQ",
+    "TK_OPER_NEQ",
+    "TK_OPER_LESS",
+    "TK_OPER_LE",
+    "TK_OPER_GRT",
+    "TK_OPER_GE",
+
+    "TK_OPER_ASSIGN",
+    "TK_OPER_POINTER",
+    // separators
+    "TK_SEPR_LBRA",
+    "TK_SEPR_RBRA",
+    "TK_SEPR_LPAR",
+    "TK_SEPR_RPAR",
+    "TK_SEPR_SCOL",
+
+    "TK_WHITE",
+    "TK_ERR"
+};
+
+typedef struct Node{
+        int type;
+        char* pattern;
+
+        int childNum;
+        struct Node* children[OPRAND_NUM_MAX];
+        
+}Node;
+void printNode(Node* node)
+{
+        if (node->type == 0)
+                printf("%s %d\n", node->pattern, node->childNum);
+        else
+                printf("%s\n", TK_TYPE_DETAIL[node->type - 257]);
+
+}
+void printTree(Node* root, int indent_num)
+{
+        int i;
+        for (i = 0; i < indent_num; i++)
+                printf(" ");
+        printNode(root);
+        
+        for(i=0; i < root->childNum; i++)
+        {
+                printTree(root->children[i], indent_num + 4);
+        }
+}
+
+Node* root;
+Node* makeLeaf(int type, char* pattern)
+{
+        Node* node = malloc(sizeof(Node));
+
+        node->type = type;
+        node->pattern = pattern;
+
+        node->childNum = 0;
+
+        // printf("\033[0;32m");
+        // printf("made leaf:");
+        // printf("\033[0m"); 
+        // printNode(node);
+        
+        return node;
+}
+Node* makeNode1(char* pattern, Node* child0)
+{
+        Node* node = malloc(sizeof(Node));
+
+        node->pattern = pattern;
+
+        node->childNum = 1;
+        node->children[0] = child0;
+
+        return node;
+}
+Node* makeNode2(char* pattern, Node* child0, Node* child1)
+{
+        Node* node = malloc(sizeof(Node));
+
+        node->pattern = pattern;
+
+        node->childNum = 2;
+        node->children[0] = child0;
+        node->children[1] = child1;
+
+        return node;
+}
+Node* makeNode3(char* pattern, Node* child0, Node* child1, Node* child2)
+{
+        Node* node = malloc(sizeof(Node));
+
+        node->pattern = pattern;
+
+        node->childNum = 3;
+        node->children[0] = child0;
+        node->children[1] = child1;
+        node->children[2] = child2;
+
+        return node;
+
+}
+Node* addChild(Node* node, Node* child)
+{       
+        if (node->childNum >= OPRAND_NUM_MAX)
+        {
+                printf("\033[0;31m"); 
+                printf("Error: too many oprands or too long length!\n");
+                printf("\033[0m"); 
+        }
+        else
+        {
+                node->children[node->childNum] = child;
+                node->childNum++;
+        }
+
+        return node;
+}
+Node* mergeChildren(Node* node, Node* node_children)
+{
+        int i;
+        for( i = 0; i < node_children->childNum; i++ )
+        {
+                addChild(node, node_children->children[i]);
+        }
+
+        return node;
+
+        // free(node_children);
+}
+
+
+
+
+typedef struct{
+        char name[NAME_LEN_MAX];
+        int type;
+}Symbol;
+Symbol* symbolTable[TABLE_LEN_MAX];
+
 extern int yylex();
+extern char* yytext;
+extern int yyleng;
 
 void yyerror(const char *str)
 {
@@ -19,6 +189,11 @@ void yyerror(const char *str)
 
 
 int yydebug = 1; 
+
+
+
+
+
 
 %}
 
@@ -82,23 +257,93 @@ int yydebug = 1;
 
 %%
 
-EXPR_PRIME:       CONST
-                | TK_NAME_ID 
-                | FUNC_CALL { printf("EXPR_PRIME detected.\n"); }
-                | '(' EXPR ')'
-                | error { printf("ERROR: error as EXPR_PRIME detected.\n"); }
+EXPR_PRIME:       CONST { $$ = $1; }
+                | TK_NAME_ID { $$ = makeLeaf(267, yytext); }
+                | FUNC_CALL { $$ = $1; }
+                | '(' EXPR ')' { $$ = $1; }
                 ;
 
-CONST:    TK_CONS_INT
-        | TK_CONS_FLOAT
-        | TK_CONS_CHAR
-        | TK_CONS_STRING { printf("TK_CONST_STRING detected.\n"); }
-        | error { printf("ERROR: error as CONST detected.\n"); }
+CONST:    TK_CONS_INT { char* text = (char*)malloc(yyleng+1); memcpy(text, yytext, yyleng); text[yyleng] = '\0'; $$ = makeLeaf(268, text); }
+        | TK_CONS_FLOAT { char* text = (char*)malloc(yyleng+1); memcpy(text, yytext, yyleng); text[yyleng] = '\0'; $$ = makeLeaf(270, text); }
+        | TK_CONS_CHAR { char* text = (char*)malloc(yyleng+1); memcpy(text, yytext, yyleng); text[yyleng] = '\0'; $$ = makeLeaf(269, text); }
+        | TK_CONS_STRING  { char* text = (char*)malloc(yyleng+1); memcpy(text, yytext, yyleng); text[yyleng] = '\0'; $$ = makeLeaf(271, text); }
         ;
+
+EXPR:     EXPR_COMP { $$ = $1;}
+        | EXPR_COMP TK_OPER_EQ EXPR_COMP { $$ = makeNode2("==", $1, $3); }
+        | EXPR_COMP TK_OPER_NEQ EXPR_COMP { $$ = makeNode2("!=", $1, $3); }
+        ;
+
+
+EXPR_COMP:        EXPR_ADD { $$ = $1;}
+                | EXPR_ADD '<' EXPR_ADD { $$ = makeNode2("<", $1, $3); }
+                | EXPR_ADD TK_OPER_LE EXPR_ADD { $$ = makeNode2("<=", $1, $3); }
+                | EXPR_ADD '>' EXPR_ADD { $$ = makeNode2(">", $1, $3); }
+                | EXPR_ADD TK_OPER_GE EXPR_ADD { $$ = makeNode2(">=", $1, $3); }
+                ;
+
+EXPR_ADD:         EXPR_MUL { $$ = $1;}
+                | EXPR_ADD '+' EXPR_ADD { $$ = makeNode2("+", $1, $3); }
+                | EXPR_ADD '-' EXPR_ADD { $$ = makeNode2("-", $1, $3); }
+                ;
+
+EXPR_MUL:         EXPR_UNARY { $$ = $1;}
+                | EXPR_MUL '*' EXPR_UNARY { $$ = makeNode2("*", $1, $3); }
+                | EXPR_MUL '/' EXPR_UNARY { $$ = makeNode2("/", $1, $3); }
+                ;
+
+EXPR_UNARY:       EXPR_PRIME { $$ = $1;}
+                | '+' EXPR_UNARY { $$ = $2; "to be done============================";}
+                | '-' EXPR_UNARY { $$ = $2; "to be done============================";}
+                ;
+
+
+STMT:     STMT_ASSIGN { $$ = $1;}
+        | STMT_IF { $$ = $1;}
+        | STMT_WHILE { $$ = $1;}
+        | STMT_RETURN { $$ = $1;}
+        | STMT_BLOCK { $$ = $1;}
+        | STMT_FUNC_CALL { $$ = $1;}
+        | STMT_EMPTY { $$ = $1;}
+        | error ';' { printf("Error: Invalid statement.\n"); $$ = makeLeaf(0, "Error"); }
+        ;
+
+STMT_ASSIGN:      TK_NAME_ID '=' EXPR ';' 
+                ;
+
+STMT_IF:  TK_CTRL_IF '(' EXPR ')'  STMT
+        | TK_CTRL_IF '(' EXPR ')' STMT TK_CTRL_ELSE STMT 
+        ;
+
+STMT_WHILE:       TK_CTRL_WHILE '(' EXPR ')' STMT
+                ;
+
+STMT_BLOCK:       '{' STMT_LIST '}' 
+                ;
+
+STMT_LIST:        { $$ = makeLeaf(0, "empty STMT_LIST"); } 
+                | STMT STMT_LIST { $$ = $1; $$ = mergeChildren($$, $2); }
+                ;
+
+STMT_FUNC_CALL:   FUNC_CALL ';' { $$ = $1;}
+                ;
+
+STMT_EMPTY:       ';' { $$ = makeLeaf(0, "empty STMT_EMPTY"); } 
+                ;
+
+STMT_RETURN:      TK_CTRL_RETURN ';' { $$ = makeNode1("return", makeLeaf(265, "return"));}
+                | TK_CTRL_RETURN EXPR ';' { $$ = makeNode2("return", makeLeaf(265, "return"), $2); }
+                ;
+
+TYPE:     TK_TYPE_INT { $$ = makeLeaf(259, yytext); }
+        | TK_TYPE_CHAR { $$ = makeLeaf(260, yytext); }
+        | TK_TYPE_FLOAT { $$ = makeLeaf(261, yytext); }
+        ;
+
 
 FUNC_CALL:        TK_NAME_ID '(' FUNC_ARG_LIST ')'
                 | TK_NAME_ID '(' ')'
-                { printf("FUNC_CALL detected.\n"); } ;
+                ;
 
 FUNC_ARG_LIST:    FUNC_ARG_FIRST FUNC_ARG_MORE
                 ;
@@ -111,82 +356,8 @@ FUNC_ARG_MORE:
                 | ',' EXPR FUNC_ARG_MORE
                 | ',' '&' TK_NAME_ID FUNC_ARG_MORE
                 ;
-
-
-EXPR:     EXPR_COMP { printf("EXPR(_COMP) detected.\n"); } 
-        | EXPR_COMP TK_OPER_EQ EXPR_COMP
-        | EXPR_COMP TK_OPER_NEQ EXPR_COMP
-        ;
-
-EXPR_COMP:        EXPR_ADD
-                | EXPR_ADD '<' EXPR_ADD
-                | EXPR_ADD TK_OPER_LE EXPR_ADD
-                | EXPR_ADD '>' EXPR_ADD
-                | EXPR_ADD TK_OPER_GE EXPR_ADD
-                { printf("EXPR_COMP detected.\n"); } ;
-
-EXPR_ADD:         EXPR_MUL
-                | EXPR_ADD '+' EXPR_ADD
-                | EXPR_ADD '-' EXPR_ADD
-                { printf("EXPR_ADD detected.\n"); } ;
-
-EXPR_MUL:         EXPR_UNARY
-                | EXPR_MUL '*' EXPR_UNARY
-                | EXPR_MUL '/' EXPR_UNARY
-                { printf("EXPR_MUL detected.\n"); } ;
-
-EXPR_UNARY:       EXPR_PRIME
-                | '+' EXPR_UNARY
-                | '-' EXPR_UNARY
-                { printf("EXPR_UNARY detected.\n"); } ;
-
-
-STMT:     STMT_ASSIGN { printf("STMT detected.\n"); } 
-        | STMT_IF
-        | STMT_WHILE
-        | STMT_RETURN
-        | STMT_BLOCK
-        | STMT_FUNC_CALL { printf("STMT(_FUNC_CALL) detected.\n"); } 
-        | STMT_EMPTY { printf("STMT(_EMPTY) detected.\n"); } 
-        | error ';' { printf("STMT(error) detected.\n"); }
-        ;
-
-STMT_ASSIGN:      TK_NAME_ID '=' EXPR ';' { printf("STMT_ASSIGN detected.\n"); } 
-                ;
-
-STMT_IF:  TK_CTRL_IF '(' EXPR ')' STMT { printf("STMT_IF detected.\n"); } 
-        | TK_CTRL_IF '(' EXPR ')' STMT TK_CTRL_ELSE STMT { printf("STMT_IF(_ELSE) detected.\n"); } 
-        ;
-
-STMT_WHILE:       TK_CTRL_WHILE '(' EXPR ')' STMT
-                ;
-
-STMT_BLOCK:       '{' STMT_LIST '}' { printf("STMT_BLCOK detected.\n"); } 
-                ;
-
-STMT_LIST:         
-                | STMT STMT_LIST { printf("STMT_LIST detected.\n"); } 
-                ;
-
-STMT_FUNC_CALL:   FUNC_CALL ';' { printf("STMT_FUNC_CALL detected.\n"); } 
-                ;
-
-STMT_EMPTY:       ';' { printf("STMT_EMPTY detected.\n"); } 
-                ;
-
-STMT_RETURN:      TK_CTRL_RETURN ';'
-                | TK_CTRL_RETURN EXPR ';'
-                ;
-
-TYPE:     TK_TYPE_INT
-        | TK_TYPE_CHAR
-        | TK_TYPE_FLOAT
-        { printf("TYPE detected.\n"); } ;
-
-
-
 FUNC_RETURN_TYPE: TK_TYPE_VOID
-                | TYPE
+                | TYPE { $$ = $1;}
                 ;
 
 FUNC_PARAM:       TYPE TK_NAME_ID
@@ -196,32 +367,38 @@ FUNC_PARAM_LIST:  FUNC_PARAM
                 | FUNC_PARAM ',' FUNC_PARAM_LIST
                 ;
 
-FUNC_VAR_DEF:     TYPE TK_NAME_ID '=' CONST ';' { printf("FUNC_VAR_DEF detected.\n"); } 
+FUNC_VAR_DEF:     TYPE TK_NAME_ID '=' CONST ';' 
+                | error ';' { printf("Error: invalid variable definition.\n"); }
                 ;
-FUNC_VAR_DEF_LIST:            
-                        | FUNC_VAR_DEF FUNC_VAR_DEF_LIST
+FUNC_VAR_DEF_LIST:        { $$ = makeLeaf(0, "FUNC_VAR_DEF_LIST (empty)");}    
+                        | FUNC_VAR_DEF FUNC_VAR_DEF_LIST { $$ = $1; $$ = mergeChildren($$, $2); }
                         ;
 
-FUNC_STMT_LIST:   STMT_RETURN
-                | STMT FUNC_STMT_LIST
+FUNC_STMT_LIST:   STMT_RETURN { $$ = $1; }
+                | STMT FUNC_STMT_LIST { $$ = $1; $$ = mergeChildren($$, $2); }
                 ;
 
-FUNC_BODY:        FUNC_VAR_DEF_LIST FUNC_STMT_LIST { printf("FUNC_BODY detected.\n"); }
+FUNC_BODY:        FUNC_VAR_DEF_LIST FUNC_STMT_LIST { $$ = makeNode2("FUNC_BODY", $1, $2); }
                 ;
 
-FUNC_DEF:         FUNC_RETURN_TYPE TK_NAME_ID '(' FUNC_PARAM_LIST ')' '{' FUNC_BODY '}'  { printf("FUNC_DEF(PARAM_LIST) detected........................\n"); }
-                | FUNC_RETURN_TYPE TK_NAME_ID '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}'  { printf("FUNC_DEF(VOID) detected........................\n"); }
+FUNC_DEF:         FUNC_RETURN_TYPE TK_NAME_ID '(' FUNC_PARAM_LIST ')' '{' FUNC_BODY '}'  
+                | FUNC_RETURN_TYPE TK_NAME_ID '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}'
                 ;
 
-PROGRAM:  PROGRAM_FUNC_DEF_LIST PROGRAM_MAIN_FUNC PROGRAM_FUNC_DEF_LIST  { printf("PROGRAM detected....................\n"); }
+PROGRAM:  PROGRAM_FUNC_DEF_LIST PROGRAM_MAIN_FUNC PROGRAM_FUNC_DEF_LIST {
+                $$ = makeNode3("PROGRAM", $1, $2, $3);
+                root = $$;
+        }
         ;
 
-PROGRAM_FUNC_DEF_LIST:      { printf("PROGRAM_FUNC_DEF_LIST(epsilon) detected.........................\n"); }
-                        | FUNC_DEF PROGRAM_FUNC_DEF_LIST { printf("PROGRAM_FUNC_DEF_LIST detected................................\n"); } 
+PROGRAM_FUNC_DEF_LIST:    { $$ = makeLeaf(0, "empty PROGRAM_FUNC_DEF_LIST"); }    
+                        | FUNC_DEF PROGRAM_FUNC_DEF_LIST 
                         ;
 
-PROGRAM_MAIN_FUNC:        TK_MAIN '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}' { printf("PROGRAM_MAIN_FUNC(VOID) detected...........................\n"); } 
-                        | TK_MAIN '(' ')' '{' FUNC_BODY '}' { printf("PROGRAM_MAIN_FUNC() detected...........................\n"); } 
+PROGRAM_MAIN_FUNC:        TK_MAIN '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}' 
+                        | TK_MAIN '(' ')' '{' FUNC_BODY '}' {
+                                $$ = makeNode2("PROGRAM_MAIN_FUNC", makeLeaf(266, "int main"), $5);
+                                }
                         ;
 
 

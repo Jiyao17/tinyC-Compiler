@@ -1,7 +1,7 @@
 
 %{ /* Literal block */
-#include "scanner.h"
-#include "y.tab.h"
+#include "lexer.h"
+#include "../parser/y.tab.h"
 
 
 enum yytokentype token_type;

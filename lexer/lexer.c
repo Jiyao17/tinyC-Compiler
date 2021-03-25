@@ -579,10 +579,10 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "scanner_regex.l"
-#line 3 "scanner_regex.l"
-#include "scanner.h"
-#include "y.tab.h"
+#line 1 "lexer.l"
+#line 3 "lexer.l"
+#include "lexer.h"
+#include "../parser/y.tab.h"
 
 
 enum yytokentype token_type;
@@ -806,7 +806,7 @@ YY_DECL
 		}
 
 	{
-#line 42 "scanner_regex.l"
+#line 42 "lexer.l"
 
 
 
@@ -870,179 +870,179 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 46 "scanner_regex.l"
+#line 46 "lexer.l"
 { token_type = TK_TYPE_VOID; return token_type; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 47 "scanner_regex.l"
+#line 47 "lexer.l"
 { token_type = TK_TYPE_INT; return token_type; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 48 "scanner_regex.l"
+#line 48 "lexer.l"
 { token_type = TK_TYPE_CHAR; return token_type; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 49 "scanner_regex.l"
+#line 49 "lexer.l"
 { token_type = TK_TYPE_FLOAT; return token_type; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 50 "scanner_regex.l"
+#line 50 "lexer.l"
 { token_type = TK_CTRL_IF; return token_type; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 51 "scanner_regex.l"
+#line 51 "lexer.l"
 { token_type = TK_CTRL_ELSE; return token_type; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 52 "scanner_regex.l"
+#line 52 "lexer.l"
 { token_type = TK_CTRL_WHILE; return token_type; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 53 "scanner_regex.l"
+#line 53 "lexer.l"
 { token_type = TK_CTRL_RETURN; return token_type; }
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 55 "scanner_regex.l"
+#line 55 "lexer.l"
 { token_type = TK_MAIN; return token_type; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 57 "scanner_regex.l"
+#line 57 "lexer.l"
 { token_type = TK_NAME_ID; return token_type; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 58 "scanner_regex.l"
+#line 58 "lexer.l"
 { token_type = TK_CONS_INT; return token_type; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 59 "scanner_regex.l"
+#line 59 "lexer.l"
 { token_type = TK_CONS_FLOAT; return token_type; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 60 "scanner_regex.l"
+#line 60 "lexer.l"
 { token_type = TK_CONS_CHAR; return token_type; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 61 "scanner_regex.l"
+#line 61 "lexer.l"
 { token_type = TK_CONS_STRING; return token_type; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 63 "scanner_regex.l"
+#line 63 "lexer.l"
 { token_type = TK_OPER_ADD; return '+'; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 64 "scanner_regex.l"
+#line 64 "lexer.l"
 { token_type = TK_OPER_SUB; return '-'; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 65 "scanner_regex.l"
+#line 65 "lexer.l"
 { token_type = TK_OPER_MUL; return '*'; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 66 "scanner_regex.l"
+#line 66 "lexer.l"
 { token_type = TK_OPER_DIV; return '/'; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 67 "scanner_regex.l"
+#line 67 "lexer.l"
 { token_type = TK_OPER_EQ; return token_type; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 68 "scanner_regex.l"
+#line 68 "lexer.l"
 { token_type = TK_OPER_NEQ; return token_type; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 69 "scanner_regex.l"
+#line 69 "lexer.l"
 { token_type = TK_OPER_LESS; return '<'; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 70 "scanner_regex.l"
+#line 70 "lexer.l"
 { token_type = TK_OPER_LE; return token_type; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 71 "scanner_regex.l"
+#line 71 "lexer.l"
 { token_type = TK_OPER_GRT; return '>'; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 72 "scanner_regex.l"
+#line 72 "lexer.l"
 { token_type = TK_OPER_GE; return token_type; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 73 "scanner_regex.l"
+#line 73 "lexer.l"
 { token_type = TK_OPER_ASSIGN;  return '='; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 74 "scanner_regex.l"
+#line 74 "lexer.l"
 { token_type = TK_OPER_POINTER; return '&'; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 76 "scanner_regex.l"
+#line 76 "lexer.l"
 { token_type = TK_SEPR_LBRA; return '{'; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 77 "scanner_regex.l"
+#line 77 "lexer.l"
 { token_type = TK_SEPR_RBRA; return '}'; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 78 "scanner_regex.l"
+#line 78 "lexer.l"
 { token_type = TK_SEPR_LPAR; return '('; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 79 "scanner_regex.l"
+#line 79 "lexer.l"
 { token_type = TK_SEPR_RBRA; return ')'; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 80 "scanner_regex.l"
+#line 80 "lexer.l"
 { token_type = TK_SEPR_SCOL; return ';'; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 81 "scanner_regex.l"
+#line 81 "lexer.l"
 { token_type = TK_SEPR_COMA; return ','; }
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 83 "scanner_regex.l"
+#line 83 "lexer.l"
 { token_type = TK_WHITE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 84 "scanner_regex.l"
+#line 84 "lexer.l"
 { token_type = TK_ERR; printf("Unknown token!"); return token_type; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 86 "scanner_regex.l"
+#line 86 "lexer.l"
 ECHO;
 	YY_BREAK
 #line 1049 "<stdout>"
@@ -2046,7 +2046,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 86 "scanner_regex.l"
+#line 86 "lexer.l"
 
 
 

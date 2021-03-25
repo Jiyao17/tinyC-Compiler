@@ -1,10 +1,14 @@
 
 #include <stdio.h>
+#include <time.h>
 
-#include "scanner.h"
+
 #include "y.tab.h"
+#include "../lexer/lexer.h"
 
-const char TK_TYPE_DETAIL[64][64] = 
+#include <string.h>
+
+static const char TK_TYPE_DETAIL[64][32] = 
 {
     "NONE",
     // data type
@@ -17,7 +21,6 @@ const char TK_TYPE_DETAIL[64][64] =
     "TK_CTRL_ELSE",
     "TK_CTRL_WHILE",
     "TK_CTRL_RETURN",
-    "TK_MAIN",
     // constant
     "TK_NAME_ID",
     "TK_CONS_INT",
@@ -45,14 +48,17 @@ const char TK_TYPE_DETAIL[64][64] =
     "TK_SEPR_LPAR",
     "TK_SEPR_RPAR",
     "TK_SEPR_SCOL",
-    "TK_SEPR_COMA",
 
     "TK_WHITE",
     "TK_ERR"
 };
 
+struct Node;
+typedef struct Node Node;
+extern void printTree(Node* root, int indent_num);
+extern Node* root;
 
-// ./scanner input_filename output_filename
+
 int main(int argc, char* argv[])
 {
     if (!lex_init(argv[1], argv[2]))
@@ -60,30 +66,24 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Illegal inputs.\n");
         return TRUE;
     }
+    
 
-
-    int token_num = 0;
-    int token_type = 0;
-
-    // for(int i = 0; i< 33; i++)
-    //     printf("token: %s\n", TK_TYPE_DETAIL[i]);
-
-
-    while (token_type = yylex())
+    if (yyparse() == 0)
     {
-        if(token_type != TK_WHITE)
-        {
-            token_num++;
-            if(token_type < 257)
-                printf("token NO.%-3d: %-3d %c\n", token_num, token_type, token_type);
-            else
-                // printf("token NO.%-3d: %-3d\n", token_num, token_type);
-                printf("token NO.%-3d: %-3d %s\n", token_num, token_type, TK_TYPE_DETAIL[token_type-257]);
-        }
+        printf("\033[0;32m"); 
+        printf("\nParse succeeded!\n\n"); 
+        printf("\033[0m"); 
     }
-    
-    
-    printf("There are %d tokens in the input file.\n", token_num);
+    else
+    {
+        printf("\033[0;31m"); 
+        printf("\nParse failed!\n\n"); 
+        printf("\033[0m"); 
+    }
+
+    printf("AST:\n");
+    printTree(root, 0);
+
 
     return 0;
 }

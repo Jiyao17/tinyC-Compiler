@@ -1,14 +1,13 @@
-
 #include <stdio.h>
 #include <time.h>
 
 
-#include "y.tab.h"
-#include "scanner.h"
+#include "../parser/y.tab.h"
+#include "../lexer/lexer.h"
 
 #include <string.h>
 
-const char TK_TYPE_DETAIL[64][32] = 
+static const char TK_TYPE_DETAIL[64][32] = 
 {
     "NONE",
     // data type
@@ -53,7 +52,6 @@ const char TK_TYPE_DETAIL[64][32] =
     "TK_ERR"
 };
 
-struct Node;
 typedef struct Node Node;
 extern void printTree(Node* root, int indent_num);
 extern Node* root;
@@ -85,39 +83,9 @@ int main(int argc, char* argv[])
     printTree(root, 0);
 
 
+
+
+
     return 0;
 }
 
-
-// int main(int argc, char* argv[])
-// {
-//     if (!lex_init(argv[1], argv[2]))
-//     {
-//         fprintf(stderr, "Illegal inputs.\n");
-//         return TRUE;
-//     }
-
-//     FILE* outfile = fopen(argv[2], "w");
-
-//     int token_num = 0;
-//     int token_type = 0;
-
-//     for(int i = 0; i< 32; i++)
-//         printf("%token: %s\n", TK_TYPE_DETAIL[i]);
-
-
-//     while (token_type = yylex())
-//     {
-//         if(token_type != TK_WHITE)
-//         {
-//             token_num++;
-//             // printf("token NO.%-3d: %-3d\n", token_num, token_type);
-//             printf("token NO.%-3d: %-3d %s\n", token_num, token_type, TK_TYPE_DETAIL[token_type]);
-//         }
-//     }
-    
-    
-//     printf("There are %d tokens in the input file.\n", token_num);
-
-//     return 0;
-// }

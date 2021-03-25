@@ -1,10 +1,10 @@
 
 
-YACC_FLAGS = --debug --verbose
+YACC_FLAGS = #--debug --verbose
 CFLAGS = 
 
-TARGET = parser
-OBJS = y.tab.o scanner.o parser.o
+TARGET = semantic_analyzer
+OBJS = y.tab.o scanner.o semantic_analyzer.o
 
 
 
@@ -19,12 +19,18 @@ y.tab.o: parser_productions.y
 
 scanner.o: scanner_regex.l 
 	lex -t $^ > scanner.c
-	gcc -c scanner.c -o $@
+	gcc scanner.c -o $@
+
+
+semantic_analyzer.o: semantic_analyzer.c
+	gcc $^ -o $@
+
+
+parser: y.tab.o scanner.o parser.o 
+	gcc $^ -o $@
 
 parser.o: parser.c
-	gcc -c $^ -o $@
-
-
+	gcc $^ -o $@
 
 # make scanner to test tokenizer
 scanner: y.tab.o scanner.o scanner_tester.o
@@ -40,7 +46,7 @@ scanner_tester.o: scanner_tester.c
 
 .PHONY: clean
 clean:
-	rm -f scanner.c y.tab.c y.tab.h y.output $(OBJS) $(TARGET) scanner_tester.o scanner
+	rm -f scanner.c y.tab.c y.tab.h y.output $(OBJS) $(TARGET) scanner_tester.o scanner parser semantic_analyzer
 
 
 

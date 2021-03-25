@@ -6,6 +6,7 @@ lexer.o: lexer.l
 	gcc -c lexer.c -o $@
 
 lexer_tester: lexer.o lexer_tester.o
+	make -C ../parser
 	gcc $^ -o $@
 
 lexer_tester.o: lexer_tester.c

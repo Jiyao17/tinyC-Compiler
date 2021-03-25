@@ -4,6 +4,7 @@
 
 #include "../parser/y.tab.h"
 #include "../lexer/lexer.h"
+#include "../parser/AST.h"
 
 #include <string.h>
 
@@ -52,9 +53,6 @@ static const char TK_TYPE_DETAIL[64][32] =
     "TK_ERR"
 };
 
-typedef struct Node Node;
-extern void printTree(Node* root, int indent_num);
-extern Node* root;
 
 
 int main(int argc, char* argv[])

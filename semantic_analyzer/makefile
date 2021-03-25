@@ -3,12 +3,13 @@
 
 
 
-semantic_analyzer: y.tab.o lexer.o semantic_analyzer.o 
-	gcc $^ -o $@
+semantic_analyzer: parser_objs lexer.o semantic_analyzer.o 
+	gcc  lexer.o semantic_analyzer.o y.tab.o AST.o -o $@
 
-y.tab.o:
+parser_objs:
 	make -C ../parser
 	cp ../parser/y.tab.o ./
+	cp ../parser/AST.o ./
 
 lexer.o:
 	make -C ../lexer

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 
-
+#include "AST.h"
 #include "y.tab.h"
 #include "../lexer/lexer.h"
 
@@ -52,11 +52,6 @@ static const char TK_TYPE_DETAIL[64][32] =
     "TK_WHITE",
     "TK_ERR"
 };
-
-struct Node;
-typedef struct Node Node;
-extern void printTree(Node* root, int indent_num);
-extern Node* root;
 
 
 int main(int argc, char* argv[])

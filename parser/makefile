@@ -1,9 +1,14 @@
 
 
+parser_objs: y.tab.o AST.o
+	echo "making parser......"
 
 y.tab.o: parser.y
 	yacc -d parser.y $(YACC_FLAGS)
 	gcc -c y.tab.c -o $@ -Wno-incompatible-pointer-types -Wno-int-conversion
+
+AST.o:
+	gcc -c AST.c -o AST.o	
 
 parser_tester: parser_tester.o y.tab.o lexer.o 
 	gcc $^ -o $@

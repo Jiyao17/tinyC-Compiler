@@ -4,6 +4,9 @@
 #include "symbol_table.h"
 
 
+
+
+
 int table_insert(SymbolTable* symbol_table, Symbol* symbol)
 {
     if(symbol_table->length == TABLE_LEN_MAX)

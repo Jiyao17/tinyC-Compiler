@@ -1,32 +1,52 @@
 
+#include <string.h>
+
 
 #include "../parser/y.tab.h"
 #include "symbol_table.h"
 #include "../parser/AST.h"
 
 
-#define NAME_LEN_MAX 64
-#define TABLE_LEN_MAX 1024*1024
+
+SymbolTable* st;
+
+int init_st()
+{
+    st = (SymbolTable*) malloc(sizeof(SymbolTable));
+
+    return 0;
+}
+
+
+int check_FUNC_DEF(Node* node)
+{
+    
+}
+
+
+
+
+// check the single production
+int check_production(Node* node)
+{
+    if (strcmp(node->pattern, "FUNC_DEF") == 0)
+        return check_FUNC_DEF(node);
+
+}
 
 
 // check AST rooted at node recursively
 int check_tree(Node* node)
 {
-    if(check_production(node) == 0)
-        return 0;
-    else if (node->childNum > 0)
+    check_production(node);
+
+    if (node->childNum > 0)
     {
-        for(int i = 0; i< node->)
+        for(int i = 0; i< node->childNum; i++)
+        {
+            check_production(node->children[i]);
+        }
     }
-}
 
-// check the single production
-int check_production(Node* node)
-{
-
-}
-
-int check_PROGRAM(Node* node)
-{
-
+    return 0;
 }

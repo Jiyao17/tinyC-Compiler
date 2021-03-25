@@ -3,8 +3,8 @@
 
 
 
-semantic_analyzer: parser_objs lexer.o semantic_analyzer.o 
-	gcc  lexer.o semantic_analyzer.o y.tab.o AST.o -o $@
+semantic_analyzer: parser_objs lexer.o semantic_analyzer.o  production_checker.o
+	gcc  lexer.o semantic_analyzer.o y.tab.o AST.o production_checker.o -o $@
 
 parser_objs:
 	make -C ../parser
@@ -18,6 +18,8 @@ lexer.o:
 semantic_analyzer.o: semantic_analyzer.c
 	gcc -c $^ -o $@
 
+production_checker.o: production_checker.c
+	gcc -c $^ -o $@
 
 .PHONY: clean
 clean:

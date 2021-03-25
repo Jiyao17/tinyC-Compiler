@@ -1,6 +1,53 @@
 
 #include "AST.h"
 
+static const char TK_TYPE_DETAIL[64][32] = 
+{
+    "NONE",
+    // data type
+    "TK_TYPE_VOID",
+    "TK_TYPE_INT",
+    "TK_TYPE_CHAR",
+    "TK_TYPE_FLOAT",
+    // control keyword
+    "TK_CTRL_IF",
+    "TK_CTRL_ELSE",
+    "TK_CTRL_WHILE",
+    "TK_CTRL_RETURN",
+    // constant
+    "TK_MAIN",
+    "TK_NAME_ID",
+    "TK_CONS_INT",
+    "TK_CONS_CHAR",
+    "TK_CONS_FLOAT",
+    "TK_CONS_STRING",
+    // operators
+    "TK_OPER_ADD",
+    "TK_OPER_SUB",
+    "TK_OPER_MUL",
+    "TK_OPER_DIV",
+
+    "TK_OPER_EQ",
+    "TK_OPER_NEQ",
+    "TK_OPER_LESS",
+    "TK_OPER_LE",
+    "TK_OPER_GRT",
+    "TK_OPER_GE",
+
+    "TK_OPER_ASSIGN",
+    "TK_OPER_POINTER",
+    // separators
+    "TK_SEPR_LBRA",
+    "TK_SEPR_RBRA",
+    "TK_SEPR_LPAR",
+    "TK_SEPR_RPAR",
+    "TK_SEPR_SCOL",
+
+    "TK_WHITE",
+    "TK_ERR"
+};
+
+
 
 void printNode(Node* node)
 {
@@ -108,7 +155,7 @@ Node* makeNode4(char* pattern, int type, Node* child0, Node* child1, Node* child
 }
 Node* addChild(Node* node, Node* child)
 {       
-        if (node->childNum >= OPRAND_NUM_MAX)
+        if (node->childNum + 1 >= OPRAND_NUM_MAX)
         {
                 printf("\033[0;31m"); 
                 printf("Error: too many oprands or too long length!\n");
@@ -123,7 +170,13 @@ Node* addChild(Node* node, Node* child)
         return node;
 }
 Node* mergeChildren(Node* node, Node* node_children)
-{
+{       
+        if(node->childNum + node_children->childNum > OPRAND_NUM_MAX)
+        {
+                printf("Error: too many children, cannot merge!\n");
+                exit(0);
+        }
+
         int i;
         for( i = 0; i < node_children->childNum; i++ )
         {
@@ -133,5 +186,27 @@ Node* mergeChildren(Node* node, Node* node_children)
         return node;
 
         // free(node_children);
+}
+Node* pushChild(Node* node, Node* child)
+{
+        if (node->childNum + 1 >= OPRAND_NUM_MAX)
+        {
+                printf("\033[0;31m"); 
+                printf("Error: too many oprands or too long length!\n");
+                printf("\033[0m"); 
+                exit(0);
+        }
+        else
+        {       
+                for(int i = node->childNum; i >= 1; i--)
+                {
+                        node->children[i] = node->children[i-1];
+                }
+                node->children[0] = child;
+
+                node->childNum++;
+        }
+
+        return node;
 }
 

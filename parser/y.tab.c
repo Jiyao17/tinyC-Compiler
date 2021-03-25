@@ -73,7 +73,7 @@
 
 
 
-const char TK_TYPE_DETAIL[64][32] = 
+static const char TK_TYPE_DETAIL[64][32] = 
 {
     "NONE",
     // data type
@@ -1704,7 +1704,7 @@ yyreduce:
 
   case 42:
 #line 180 "parser.y" /* yacc.c:1646  */
-    { (yyval) = (yyvsp[0]); (yyval) = addChild((yyvsp[0]), (yyvsp[-1]));}
+    { (yyval) = (yyvsp[0]); (yyval) = pushChild((yyvsp[0]), (yyvsp[-1]));}
 #line 1709 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1782,13 +1782,13 @@ yyreduce:
 
   case 56:
 #line 211 "parser.y" /* yacc.c:1646  */
-    { (yyval) = (yyvsp[0]); (yyval) = addChild((yyval), (yyvsp[-1]));}
+    { (yyval) = (yyvsp[0]); (yyval) = pushChild((yyval), (yyvsp[-1]));}
 #line 1787 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
 #line 212 "parser.y" /* yacc.c:1646  */
-    { (yyval) = (yyvsp[0]); (yyval) = addChild((yyvsp[0]), makeLeaf("&TK_NAME_ID", 283));}
+    { (yyval) = (yyvsp[0]); (yyval) = pushChild((yyvsp[0]), makeLeaf("&TK_NAME_ID", 283));}
 #line 1793 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1818,7 +1818,7 @@ yyreduce:
 
   case 62:
 #line 223 "parser.y" /* yacc.c:1646  */
-    { (yyval) = (yyvsp[0]); (yyval) = addChild((yyval), (yyvsp[-2])); }
+    { (yyval) = (yyvsp[0]); (yyval) = pushChild((yyval), (yyvsp[-2])); }
 #line 1823 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1848,7 +1848,7 @@ yyreduce:
 
   case 66:
 #line 236 "parser.y" /* yacc.c:1646  */
-    { (yyval) = (yyvsp[0]); (yyval) = addChild((yyval), (yyvsp[-1])); }
+    { (yyval) = (yyvsp[0]); (yyval) = pushChild((yyval), (yyvsp[-1])); }
 #line 1853 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1860,7 +1860,7 @@ yyreduce:
 
   case 68:
 #line 240 "parser.y" /* yacc.c:1646  */
-    { (yyval) = (yyvsp[0]); (yyval) = addChild((yyval), (yyvsp[-1])); }
+    { (yyval) = (yyvsp[0]); (yyval) = pushChild((yyval), (yyvsp[-1])); }
 #line 1865 "y.tab.c" /* yacc.c:1646  */
     break;
 

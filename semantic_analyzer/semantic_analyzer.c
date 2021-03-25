@@ -5,6 +5,7 @@
 #include "../parser/y.tab.h"
 #include "../lexer/lexer.h"
 #include "../parser/AST.h"
+#include "production_checker.h"
 
 #include <string.h>
 
@@ -81,7 +82,8 @@ int main(int argc, char* argv[])
     printTree(root, 0);
 
 
-
+    init_st();
+    
 
 
     return 0;

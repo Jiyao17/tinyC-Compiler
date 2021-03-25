@@ -10,7 +10,7 @@
 
 
 
-const char TK_TYPE_DETAIL[64][32] = 
+static const char TK_TYPE_DETAIL[64][32] = 
 {
     "NONE",
     // data type
@@ -177,7 +177,7 @@ STMT_BLOCK:       '{' STMT_LIST '}' { $$ = makeNode1("STMT_BLOCK", 0, $2);}
                 ;
 
 STMT_LIST:        { $$ = makeLeaf("STMT_LIST", 1); } 
-                | STMT STMT_LIST { $$ = $2; $$ = addChild($2, $1);}
+                | STMT STMT_LIST { $$ = $2; $$ = pushChild($2, $1);}
                 ;
 
 STMT_FUNC_CALL:   FUNC_CALL ';' { $$ = $1;}
@@ -208,8 +208,8 @@ FUNC_ARG_FIRST:   '&' TK_NAME_ID_WRAPPER { $$ = makeNode2("FUNC_ARG_FIRST", 0, m
                 ;
 
 FUNC_ARG_MORE:    
-                | ',' EXPR FUNC_ARG_MORE { $$ = $3; $$ = addChild($$, $2);}
-                | ',' '&' TK_NAME_ID_WRAPPER FUNC_ARG_MORE { $$ = $4; $$ = addChild($4, makeLeaf("&TK_NAME_ID", 283));}
+                | ',' EXPR FUNC_ARG_MORE { $$ = $3; $$ = pushChild($$, $2);}
+                | ',' '&' TK_NAME_ID_WRAPPER FUNC_ARG_MORE { $$ = $4; $$ = pushChild($4, makeLeaf("&TK_NAME_ID", 283));}
                 ;
 
 FUNC_RETURN_TYPE: TK_TYPE_VOID { $$ = makeLeaf("void", 258); }
@@ -220,7 +220,7 @@ FUNC_PARAM:       TYPE TK_NAME_ID_WRAPPER { $$ = makeNode2("FUNC_PARAM", 0, $1, 
                 ;
 
 FUNC_PARAM_LIST:  FUNC_PARAM { $$ = $1; }
-                | FUNC_PARAM ',' FUNC_PARAM_LIST { $$ = $3; $$ = addChild($$, $1); }
+                | FUNC_PARAM ',' FUNC_PARAM_LIST { $$ = $3; $$ = pushChild($$, $1); }
                 ;
 
 FUNC_VAR_DEF:     TYPE TK_NAME_ID_WRAPPER '=' CONST ';' { $$ = makeNode3("FUNC_VAR_DEF", 0, $1, $2, $4); }
@@ -233,11 +233,11 @@ FUNC_VAR_DEF:     TYPE TK_NAME_ID_WRAPPER '=' CONST ';' { $$ = makeNode3("FUNC_V
                         }
                 ;
 FUNC_VAR_DEF_LIST:        { $$ = makeLeaf("FUNC_VAR_DEF_LIST", 1);}    
-                        | FUNC_VAR_DEF FUNC_VAR_DEF_LIST { $$ = $2; $$ = addChild($$, $1); }
+                        | FUNC_VAR_DEF FUNC_VAR_DEF_LIST { $$ = $2; $$ = pushChild($$, $1); }
                         ;
 
 FUNC_STMT_LIST:   STMT_RETURN { $$ = $1; }
-                | STMT FUNC_STMT_LIST { $$ = $2; $$ = addChild($$, $1); }
+                | STMT FUNC_STMT_LIST { $$ = $2; $$ = pushChild($$, $1); }
                 ;
 
 FUNC_BODY:        FUNC_VAR_DEF_LIST FUNC_STMT_LIST { $$ = makeNode2("FUNC_BODY", 0, $1, $2); }

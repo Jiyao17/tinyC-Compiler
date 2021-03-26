@@ -63,14 +63,17 @@ static const char TK_TYPE_DETAIL[64][32] =
 extern int yylex();
 extern char* yytext;
 extern int yyleng;
+extern int line_num;
 
 void yyerror(const char *str)
 {
-        fprintf(stderr,"error: %s\n",str);
+        fprintf(stderr, "Syntax error: ");
 }
 
 
+
 int yydebug = 1; 
+
 
 
 %}
@@ -109,7 +112,7 @@ TK_NAME_ID_WRAPPER:       TK_NAME_ID {
 EXPR_PRIME:       CONST { $$ = $1; }
                 | TK_NAME_ID_WRAPPER { $$ = $1; }
                 | FUNC_CALL { $$ = $1; }
-                | '(' EXPR ')' { $$ = $1; }
+                | '(' EXPR ')' { $$ = $2; }
                 ;
 
 CONST:    TK_CONS_INT { char* text = (char*)malloc(yyleng+1); memcpy(text, yytext, yyleng); text[yyleng] = '\0'; $$ = makeLeaf(text, 268); }
@@ -155,10 +158,8 @@ STMT:     STMT_ASSIGN { $$ = $1;}
         | STMT_FUNC_CALL { $$ = $1;}
         | STMT_EMPTY { $$ = $1;}
         | error ';' { 
-                char* text = (char*)malloc(yyleng+1);
-                memcpy(text, yytext, yyleng);
-                text[yyleng] = '\0';
-                printf("Error: Invalid statement: \"%s\".\n", text); 
+                fprintf(stderr, "Invalid statement at: line %d.\n", line_num);
+
                 $$ = makeLeaf("STMT Error", 0); 
                 }
         ;
@@ -175,10 +176,16 @@ STMT_WHILE:       TK_CTRL_WHILE '(' EXPR ')' STMT { $$ = makeNode2("STMT_WHILE",
 
 STMT_BLOCK:       '{' STMT_LIST '}' { $$ = makeNode1("STMT_BLOCK", 0, $2);}
                 ;
+STMT_LIST:        { $$ = makeLeaf("STMT_LIST empty", 1); } 
+                | STMT STMT_LIST { 
+                        if(ptncmp($2, "STMT_LIST") != 0)
+                        {
+                                $$ = makeNode1("STMT_LIST", 1, $2);
+                        }
+                        
+                        $$ = pushAsChild($2, $1);
+                        }
 
-STMT_LIST:        { $$ = makeLeaf("STMT_LIST", 1); } 
-                | STMT STMT_LIST { $$ = $2; $$ = pushChild($2, $1);}
-                ;
 
 STMT_FUNC_CALL:   FUNC_CALL ';' { $$ = $1;}
                 ;
@@ -186,7 +193,7 @@ STMT_FUNC_CALL:   FUNC_CALL ';' { $$ = $1;}
 STMT_EMPTY:       ';' { $$ = makeLeaf("STMT_EMPTY", 1); } 
                 ;
 
-STMT_RETURN:      TK_CTRL_RETURN ';' { $$ = makeNode1("STMT_RETURN", 0, makeLeaf("return", 265));}
+STMT_RETURN:      TK_CTRL_RETURN ';' { $$ = makeNode1("STMT_RETURN", 0, makeNode1("STMT_RETURN", 0, makeLeaf("return", 265)));}
                 | TK_CTRL_RETURN EXPR ';' { $$ = makeNode2("STMT_RETURN", 1, makeLeaf("return", 265), $2); }
                 ;
 
@@ -200,16 +207,21 @@ FUNC_CALL:        TK_NAME_ID_WRAPPER '(' FUNC_ARG_LIST ')' { $$ = makeNode2("FUN
                 | TK_NAME_ID_WRAPPER '(' ')' { $$ = makeNode1("FUNC_CALL", 1, $1); }
                 ;
 
-FUNC_ARG_LIST:    FUNC_ARG_FIRST FUNC_ARG_MORE { $$ = makeNode2("FUNC_ARG_LIST", 0, $1, $2); }
+FUNC_ARG_LIST:    FUNC_ARG_FIRST FUNC_ARG_MORE { 
+                        $$ = makeNode2("FUNC_ARG_LIST", 0, $1, $2); }
                 ;
 
 FUNC_ARG_FIRST:   '&' TK_NAME_ID_WRAPPER { $$ = makeNode2("FUNC_ARG_FIRST", 0, makeLeaf("&TK_NAME_ID", 283), $2);}
                 | EXPR { $$ = makeNode1("FUNC_ARG_FIRST", 1, $1);}
                 ;
 
-FUNC_ARG_MORE:    
-                | ',' EXPR FUNC_ARG_MORE { $$ = $3; $$ = pushChild($$, $2);}
-                | ',' '&' TK_NAME_ID_WRAPPER FUNC_ARG_MORE { $$ = $4; $$ = pushChild($4, makeLeaf("&TK_NAME_ID", 283));}
+FUNC_ARG_MORE:    { $$ = makeNode1("FUNC_ARG_MORE", 0, makeLeaf("FUNC_ARG_MORE empty", 1)); }
+                | ',' EXPR FUNC_ARG_MORE { $$ = $3; $$ = pushAsChild($$, $2);}
+                | ',' '&' TK_NAME_ID_WRAPPER FUNC_ARG_MORE { 
+                        $$ = $4; 
+                        $$ = pushAsChild($4, 
+                                makeNode2("FUNC_ARG_MORE arg", 3, 
+                                        makeLeaf("&", 283), $3));}
                 ;
 
 FUNC_RETURN_TYPE: TK_TYPE_VOID { $$ = makeLeaf("void", 258); }
@@ -219,27 +231,31 @@ FUNC_RETURN_TYPE: TK_TYPE_VOID { $$ = makeLeaf("void", 258); }
 FUNC_PARAM:       TYPE TK_NAME_ID_WRAPPER { $$ = makeNode2("FUNC_PARAM", 0, $1, $2); }
                 ;
 
-FUNC_PARAM_LIST:  FUNC_PARAM { $$ = $1; }
-                | FUNC_PARAM ',' FUNC_PARAM_LIST { $$ = $3; $$ = pushChild($$, $1); }
+FUNC_PARAM_LIST:  FUNC_PARAM { $$ = makeNode1("FUNC_PARAM_LIST", 0, $1); }
+                | FUNC_PARAM ',' FUNC_PARAM_LIST { 
+                        $$ = $3; 
+                        
+                        $$ = pushAsChild($$, $1); }
                 ;
 
 FUNC_VAR_DEF:     TYPE TK_NAME_ID_WRAPPER '=' CONST ';' { $$ = makeNode3("FUNC_VAR_DEF", 0, $1, $2, $4); }
                 | error ';' {
-                char* text = (char*)malloc(yyleng+1);
-                memcpy(text, yytext, yyleng);
-                text[yyleng] = '\0';
-                printf("Error, Invalid variable definition \"%s\".\n", text); 
-                $$ = makeLeaf("FUNC_VAR_DEF Error", 0); 
+                        char* text = (char*)malloc(yyleng+1);
+                        memcpy(text, yytext, yyleng);
+                        text[yyleng] = '\0';
+                        fprintf(stderr, "Error, Invalid variable definition \"%s\".\n", text); 
+                        $$ = makeLeaf("FUNC_VAR_DEF Error", 0); 
                         }
                 ;
 FUNC_VAR_DEF_LIST:        { $$ = makeLeaf("FUNC_VAR_DEF_LIST", 1);}    
-                        | FUNC_VAR_DEF FUNC_VAR_DEF_LIST { $$ = $2; $$ = pushChild($$, $1); }
+                        | FUNC_VAR_DEF FUNC_VAR_DEF_LIST { $$ = $2; $$ = pushAsChild($$, $1); }
                         ;
 
-FUNC_STMT_LIST:   STMT_RETURN { $$ = $1; }
-                | STMT FUNC_STMT_LIST { $$ = $2; $$ = pushChild($$, $1); }
+FUNC_STMT_LIST:   STMT_RETURN { $$ = makeNode1("FUNC_STMT_LIST", 0, $1); }
+                | STMT FUNC_STMT_LIST { $$ = $2; $$ = pushAsChild($$, $1); }
                 ;
 
+                ;
 FUNC_BODY:        FUNC_VAR_DEF_LIST FUNC_STMT_LIST { $$ = makeNode2("FUNC_BODY", 0, $1, $2); }
                 ;
 

@@ -3,11 +3,14 @@
 #include "lexer.h"
 #include "../parser/y.tab.h"
 
+int line_num = 1;
 
 enum yytokentype token_type;
 %}
 
 /* Regular Definitions data_type [(int)(char)(float)] */
+
+
 letter [A-Za-z]
 nzdigit [1-9]
 digit (0|nzdigit)
@@ -15,7 +18,7 @@ sign [:\.'\"\%\{\}\(\)_\+\-\*\/=\<\>!& ]
 escape ("\\\\"|"\\'"|"\\\""|"\\n"|"\\t")
 unletter ({letter}|_)
 
-whitespace [ \t\n]+
+whitespace [ \t]+
 
 data_type ("int"|"char"|"float")
 control ("if"|"else"|"while"|"return")
@@ -41,7 +44,7 @@ separator [\{\}\(\);]
 /* Regular definitions to match invalid tokens */
 %% /* Second section */
 
-
+\n              { line_num++; }
 
 "void"          { token_type = TK_TYPE_VOID; return token_type; }
 "int"           { token_type = TK_TYPE_INT; return token_type; }

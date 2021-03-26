@@ -99,3 +99,15 @@ CONST:    TK_CONS_INT { int* pVal = malloc(sizeof(int)); *pVal = atoi(yytext());
 $$ = makeLeaf(0, "empty FUNC_VAR_DEF_LIST"); 
 
 $$ = $1; $$ = mergeChildren($$, $2); 
+
+
+STMT_LIST:        {  } 
+                | STMT STMT_LIST { 
+                        printf("FUCK!!!!!!!!!");
+                        if(ptncmp($2, "STMT_LIST") != 0)
+                        {
+                                $$ = makeNode1("STMT_LIST FUCK", 1, $2);
+                        }
+                        
+                        $$ = pushAsChild($2, $1);
+                        }

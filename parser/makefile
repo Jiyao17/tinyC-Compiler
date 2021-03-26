@@ -1,4 +1,4 @@
-
+YACC_FLAGS = #--debug --verbose
 
 parser_objs: y.tab.o AST.o
 	echo "making parser......"

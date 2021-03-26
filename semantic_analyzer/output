@@ -1,0 +1,148 @@
+AST:
+PROGRAM 3
+    PROGRAM_FUNC_DEF_LIST 2
+        FUNC_DEF 4
+            TK_TYPE_INT: int
+            TK_NAME_ID: do_addition
+            FUNC_PARAM_LIST 2
+                FUNC_PARAM 2
+                    TK_TYPE_INT: int
+                    TK_NAME_ID: e
+                FUNC_PARAM 2
+                    TK_TYPE_INT: int
+                    TK_NAME_ID: f
+            FUNC_BODY 2
+                FUNC_VAR_DEF_LIST 0
+                FUNC_STMT_LIST 3
+                    STMT_IF 2
+                        EXPR 3
+                            TK_NAME_ID: e
+                            TK_OPER_EQ: ==
+                            TK_CONS_INT: 0
+                        STMT_RETURN 2
+                            TK_CTRL_RETURN: return
+                            TK_NAME_ID: b
+                    STMT_IF 2
+                        EXPR 3
+                            TK_NAME_ID: f
+                            TK_OPER_EQ: ==
+                            TK_CONS_INT: 0
+                        STMT_RETURN 2
+                            TK_CTRL_RETURN: return
+                            TK_NAME_ID: a
+                    STMT_RETURN 2
+                        TK_CTRL_RETURN: return
+                        EXPR_ADD 3
+                            TK_NAME_ID: e
+                            TK_OPER_ADD: !=
+                            TK_NAME_ID: f
+        PROGRAM_FUNC_DEF_LIST 0
+    PROGRAM_MAIN_FUNC 3
+        TK_MAIN: int main
+        TK_TYPE_VOID: void
+        FUNC_BODY 2
+            FUNC_VAR_DEF_LIST 2
+                FUNC_VAR_DEF 3
+                    TK_TYPE_INT: int
+                    TK_NAME_ID: c
+                    TK_CONS_INT: 0
+                FUNC_VAR_DEF 3
+                    TK_TYPE_INT: int
+                    TK_NAME_ID: d
+                    TK_CONS_INT: 0
+            FUNC_STMT_LIST 6
+                FUNC_CALL 2
+                    TK_NAME_ID: printf
+                    FUNC_ARG_LIST 2
+                        FUNC_ARG_FIRST 1
+                            TK_CONS_STRING: "please input two integer values separated by whitespace:\n"
+                        FUNC_ARG_MORE 1
+                            FUNC_ARG_MORE empty 0
+                FUNC_CALL 2
+                    TK_NAME_ID: scanf
+                    FUNC_ARG_LIST 2
+                        FUNC_ARG_FIRST 1
+                            TK_CONS_STRING: "%d %d"
+                        FUNC_ARG_MORE 3
+                            FUNC_ARG_MORE arg 2
+                                TK_OPER_POINTER: &
+                                TK_NAME_ID: a
+                            FUNC_ARG_MORE arg 2
+                                TK_OPER_POINTER: &
+                                TK_NAME_ID: b
+                            FUNC_ARG_MORE empty 0
+                STMT_ASSIGN 2
+                    TK_NAME_ID: c
+                    FUNC_CALL 2
+                        TK_NAME_ID: do_addition
+                        FUNC_ARG_LIST 2
+                            FUNC_ARG_FIRST 1
+                                TK_NAME_ID: a
+                            FUNC_ARG_MORE 2
+                                TK_NAME_ID: b
+                                FUNC_ARG_MORE empty 0
+                Node of error: STMT Error
+                FUNC_CALL 2
+                    TK_NAME_ID: printf
+                    FUNC_ARG_LIST 2
+                        FUNC_ARG_FIRST 1
+                            TK_CONS_STRING: "%d + %d = %d \n"
+                        FUNC_ARG_MORE 4
+                            TK_NAME_ID: a
+                            TK_NAME_ID: b
+                            TK_NAME_ID: c
+                            FUNC_ARG_MORE empty 0
+                STMT_RETURN 2
+                    TK_CTRL_RETURN: return
+                    TK_CONS_INT: 0
+    PROGRAM_FUNC_DEF_LIST 2
+        FUNC_DEF 4
+            TK_TYPE_INT: int
+            TK_NAME_ID: do_subduction
+            FUNC_PARAM_LIST 2
+                FUNC_PARAM 2
+                    TK_TYPE_INT: int
+                    TK_NAME_ID: a
+                FUNC_PARAM 2
+                    TK_TYPE_INT: int
+                    TK_NAME_ID: b
+            FUNC_BODY 2
+                FUNC_VAR_DEF_LIST 0
+                FUNC_STMT_LIST 3
+                    STMT_IF 2
+                        EXPR 3
+                            TK_NAME_ID: a
+                            TK_OPER_EQ: ==
+                            TK_CONS_INT: 0
+                        STMT_RETURN 2
+                            TK_CTRL_RETURN: return
+                            EXPR_MUL 2
+                                TK_NAME_ID: b
+                                EXPR_UNARY 2
+                                    TK_OPER_SUB: -
+                                    TK_CONS_INT: 1
+                    STMT_IF 2
+                        EXPR 3
+                            TK_NAME_ID: b
+                            TK_OPER_EQ: ==
+                            TK_CONS_INT: 0
+                        STMT_RETURN 2
+                            TK_CTRL_RETURN: return
+                            TK_NAME_ID: a
+                    STMT_RETURN 2
+                        TK_CTRL_RETURN: return
+                        EXPR_ADD 3
+                            TK_NAME_ID: a
+                            TK_OPER_SUB: !=
+                            TK_NAME_ID: b
+        PROGRAM_FUNC_DEF_LIST 0
+
+Symbol table 8: 
+Variable: int e
+Variable: int f
+Function: int do_addition(int, int)
+Variable: int c
+Variable: int d
+Variable: int a
+Variable: int b
+Function: int do_subduction(int, int)

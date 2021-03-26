@@ -42,9 +42,9 @@ Node* makeNode3(char* pattern, int type, Node* child0, Node* child1, Node* child
 Node* makeNode4(char* pattern, int type, Node* child0, Node* child1, Node* child2, Node* child3);
 Node* addChild(Node* node, Node* child);
 Node* mergeChildren(Node* node, Node* node_children);
-Node* pushChild(Node* node, Node* child);
+Node* pushAsChild(Node* node, Node* child);
 
-
+int ptncmp(Node* node, char* str);
 
 
 

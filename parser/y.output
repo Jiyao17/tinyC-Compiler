@@ -1,0 +1,1967 @@
+Terminals unused in grammar
+
+   TK_OPER_ADD
+   TK_OPER_SUB
+   TK_OPER_MUL
+   TK_OPER_DIV
+   TK_OPER_LESS
+   TK_OPER_GRT
+   TK_OPER_ASSIGN
+   TK_OPER_POINTER
+   TK_SEPR_LBRA
+   TK_SEPR_RBRA
+   TK_SEPR_LPAR
+   TK_SEPR_RPAR
+   TK_SEPR_SCOL
+   TK_SEPR_COMA
+   TK_WHITE
+   TK_ERR
+
+
+State 30 conflicts: 1 shift/reduce
+State 31 conflicts: 1 shift/reduce
+State 33 conflicts: 1 shift/reduce
+State 34 conflicts: 1 shift/reduce
+State 37 conflicts: 1 shift/reduce
+State 130 conflicts: 2 shift/reduce
+State 131 conflicts: 2 shift/reduce
+State 139 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: PROGRAM $end
+
+    1 TK_NAME_ID_WRAPPER: TK_NAME_ID
+
+    2 EXPR_PRIME: CONST
+    3           | TK_NAME_ID_WRAPPER
+    4           | FUNC_CALL
+    5           | '(' EXPR ')'
+
+    6 CONST: TK_CONS_INT
+    7      | TK_CONS_FLOAT
+    8      | TK_CONS_CHAR
+    9      | TK_CONS_STRING
+
+   10 EXPR: EXPR_COMP
+   11     | EXPR_COMP TK_OPER_EQ EXPR_COMP
+   12     | EXPR_COMP TK_OPER_NEQ EXPR_COMP
+
+   13 EXPR_COMP: EXPR_ADD
+   14          | EXPR_ADD '<' EXPR_ADD
+   15          | EXPR_ADD TK_OPER_LE EXPR_ADD
+   16          | EXPR_ADD '>' EXPR_ADD
+   17          | EXPR_ADD TK_OPER_GE EXPR_ADD
+
+   18 EXPR_ADD: EXPR_MUL
+   19         | EXPR_ADD '+' EXPR_ADD
+   20         | EXPR_ADD '-' EXPR_ADD
+
+   21 EXPR_MUL: EXPR_UNARY
+   22         | EXPR_MUL '*' EXPR_UNARY
+   23         | EXPR_MUL '/' EXPR_UNARY
+
+   24 EXPR_UNARY: EXPR_PRIME
+   25           | '+' EXPR_UNARY
+   26           | '-' EXPR_UNARY
+
+   27 STMT: STMT_ASSIGN
+   28     | STMT_IF
+   29     | STMT_WHILE
+   30     | STMT_RETURN
+   31     | STMT_BLOCK
+   32     | STMT_FUNC_CALL
+   33     | STMT_EMPTY
+   34     | error ';'
+
+   35 STMT_ASSIGN: TK_NAME_ID_WRAPPER '=' EXPR ';'
+
+   36 STMT_IF: TK_CTRL_IF '(' EXPR ')' STMT
+   37        | TK_CTRL_IF '(' EXPR ')' STMT TK_CTRL_ELSE STMT
+
+   38 STMT_WHILE: TK_CTRL_WHILE '(' EXPR ')' STMT
+
+   39 STMT_BLOCK: '{' STMT_LIST '}'
+
+   40 STMT_LIST: %empty
+   41          | STMT STMT_LIST
+
+   42 STMT_FUNC_CALL: FUNC_CALL ';'
+
+   43 STMT_EMPTY: ';'
+
+   44 STMT_RETURN: TK_CTRL_RETURN ';'
+   45            | TK_CTRL_RETURN EXPR ';'
+
+   46 TYPE: TK_TYPE_INT
+   47     | TK_TYPE_CHAR
+   48     | TK_TYPE_FLOAT
+
+   49 FUNC_CALL: TK_NAME_ID_WRAPPER '(' FUNC_ARG_LIST ')'
+   50          | TK_NAME_ID_WRAPPER '(' ')'
+
+   51 FUNC_ARG_LIST: FUNC_ARG_FIRST FUNC_ARG_MORE
+
+   52 FUNC_ARG_FIRST: '&' TK_NAME_ID_WRAPPER
+   53               | EXPR
+
+   54 FUNC_ARG_MORE: %empty
+   55              | ',' EXPR FUNC_ARG_MORE
+   56              | ',' '&' TK_NAME_ID_WRAPPER FUNC_ARG_MORE
+
+   57 FUNC_RETURN_TYPE: TK_TYPE_VOID
+   58                 | TYPE
+
+   59 FUNC_PARAM: TYPE TK_NAME_ID_WRAPPER
+
+   60 FUNC_PARAM_LIST: FUNC_PARAM
+   61                | FUNC_PARAM ',' FUNC_PARAM_LIST
+
+   62 FUNC_VAR_DEF: TYPE TK_NAME_ID_WRAPPER '=' CONST ';'
+   63             | error ';'
+
+   64 FUNC_VAR_DEF_LIST: %empty
+   65                  | FUNC_VAR_DEF FUNC_VAR_DEF_LIST
+
+   66 FUNC_STMT_LIST: STMT_RETURN
+   67               | STMT FUNC_STMT_LIST
+
+   68 FUNC_BODY: FUNC_VAR_DEF_LIST FUNC_STMT_LIST
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' FUNC_PARAM_LIST ')' '{' FUNC_BODY '}'
+   70         | FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}'
+
+   71 PROGRAM: PROGRAM_FUNC_DEF_LIST PROGRAM_MAIN_FUNC PROGRAM_FUNC_DEF_LIST
+
+   72 PROGRAM_FUNC_DEF_LIST: %empty
+   73                      | FUNC_DEF PROGRAM_FUNC_DEF_LIST
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}'
+   75                  | TK_MAIN '(' ')' '{' FUNC_BODY '}'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'&' (38) 52 56
+'(' (40) 5 36 37 38 49 50 69 70 74 75
+')' (41) 5 36 37 38 49 50 69 70 74 75
+'*' (42) 22
+'+' (43) 19 25
+',' (44) 55 56 61
+'-' (45) 20 26
+'/' (47) 23
+';' (59) 34 35 42 43 44 45 62 63
+'<' (60) 14
+'=' (61) 35 62
+'>' (62) 16
+'{' (123) 39 69 70 74 75
+'}' (125) 39 69 70 74 75
+error (256) 34 63
+TK_TYPE_VOID (258) 57 70 74
+TK_TYPE_INT (259) 46
+TK_TYPE_CHAR (260) 47
+TK_TYPE_FLOAT (261) 48
+TK_CTRL_IF (262) 36 37
+TK_CTRL_ELSE (263) 37
+TK_CTRL_WHILE (264) 38
+TK_CTRL_RETURN (265) 44 45
+TK_MAIN (266) 74 75
+TK_NAME_ID (267) 1
+TK_CONS_INT (268) 6
+TK_CONS_CHAR (269) 8
+TK_CONS_FLOAT (270) 7
+TK_CONS_STRING (271) 9
+TK_OPER_ADD (272)
+TK_OPER_SUB (273)
+TK_OPER_MUL (274)
+TK_OPER_DIV (275)
+TK_OPER_EQ (276) 11
+TK_OPER_NEQ (277) 12
+TK_OPER_LESS (278)
+TK_OPER_LE (279) 15
+TK_OPER_GRT (280)
+TK_OPER_GE (281) 17
+TK_OPER_ASSIGN (282)
+TK_OPER_POINTER (283)
+TK_SEPR_LBRA (284)
+TK_SEPR_RBRA (285)
+TK_SEPR_LPAR (286)
+TK_SEPR_RPAR (287)
+TK_SEPR_SCOL (288)
+TK_SEPR_COMA (289)
+TK_WHITE (290)
+TK_ERR (291)
+
+
+Nonterminals, with rules where they appear
+
+$accept (51)
+    on left: 0
+TK_NAME_ID_WRAPPER (52)
+    on left: 1, on right: 3 35 49 50 52 56 59 62 69 70
+EXPR_PRIME (53)
+    on left: 2 3 4 5, on right: 24
+CONST (54)
+    on left: 6 7 8 9, on right: 2 62
+EXPR (55)
+    on left: 10 11 12, on right: 5 35 36 37 38 45 53 55
+EXPR_COMP (56)
+    on left: 13 14 15 16 17, on right: 10 11 12
+EXPR_ADD (57)
+    on left: 18 19 20, on right: 13 14 15 16 17 19 20
+EXPR_MUL (58)
+    on left: 21 22 23, on right: 18 22 23
+EXPR_UNARY (59)
+    on left: 24 25 26, on right: 21 22 23 25 26
+STMT (60)
+    on left: 27 28 29 30 31 32 33 34, on right: 36 37 38 41 67
+STMT_ASSIGN (61)
+    on left: 35, on right: 27
+STMT_IF (62)
+    on left: 36 37, on right: 28
+STMT_WHILE (63)
+    on left: 38, on right: 29
+STMT_BLOCK (64)
+    on left: 39, on right: 31
+STMT_LIST (65)
+    on left: 40 41, on right: 39 41
+STMT_FUNC_CALL (66)
+    on left: 42, on right: 32
+STMT_EMPTY (67)
+    on left: 43, on right: 33
+STMT_RETURN (68)
+    on left: 44 45, on right: 30 66
+TYPE (69)
+    on left: 46 47 48, on right: 58 59 62
+FUNC_CALL (70)
+    on left: 49 50, on right: 4 42
+FUNC_ARG_LIST (71)
+    on left: 51, on right: 49
+FUNC_ARG_FIRST (72)
+    on left: 52 53, on right: 51
+FUNC_ARG_MORE (73)
+    on left: 54 55 56, on right: 51 55 56
+FUNC_RETURN_TYPE (74)
+    on left: 57 58, on right: 69 70
+FUNC_PARAM (75)
+    on left: 59, on right: 60 61
+FUNC_PARAM_LIST (76)
+    on left: 60 61, on right: 61 69
+FUNC_VAR_DEF (77)
+    on left: 62 63, on right: 65
+FUNC_VAR_DEF_LIST (78)
+    on left: 64 65, on right: 65 68
+FUNC_STMT_LIST (79)
+    on left: 66 67, on right: 67 68
+FUNC_BODY (80)
+    on left: 68, on right: 69 70 74 75
+FUNC_DEF (81)
+    on left: 69 70, on right: 73
+PROGRAM (82)
+    on left: 71, on right: 0
+PROGRAM_FUNC_DEF_LIST (83)
+    on left: 72 73, on right: 71 73
+PROGRAM_MAIN_FUNC (84)
+    on left: 74 75, on right: 71
+
+
+State 0
+
+    0 $accept: . PROGRAM $end
+
+    TK_TYPE_VOID   shift, and go to state 1
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    $default  reduce using rule 72 (PROGRAM_FUNC_DEF_LIST)
+
+    TYPE                   go to state 5
+    FUNC_RETURN_TYPE       go to state 6
+    FUNC_DEF               go to state 7
+    PROGRAM                go to state 8
+    PROGRAM_FUNC_DEF_LIST  go to state 9
+
+
+State 1
+
+   57 FUNC_RETURN_TYPE: TK_TYPE_VOID .
+
+    $default  reduce using rule 57 (FUNC_RETURN_TYPE)
+
+
+State 2
+
+   46 TYPE: TK_TYPE_INT .
+
+    $default  reduce using rule 46 (TYPE)
+
+
+State 3
+
+   47 TYPE: TK_TYPE_CHAR .
+
+    $default  reduce using rule 47 (TYPE)
+
+
+State 4
+
+   48 TYPE: TK_TYPE_FLOAT .
+
+    $default  reduce using rule 48 (TYPE)
+
+
+State 5
+
+   58 FUNC_RETURN_TYPE: TYPE .
+
+    $default  reduce using rule 58 (FUNC_RETURN_TYPE)
+
+
+State 6
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE . TK_NAME_ID_WRAPPER '(' FUNC_PARAM_LIST ')' '{' FUNC_BODY '}'
+   70         | FUNC_RETURN_TYPE . TK_NAME_ID_WRAPPER '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}'
+
+    TK_NAME_ID  shift, and go to state 10
+
+    TK_NAME_ID_WRAPPER  go to state 11
+
+
+State 7
+
+   73 PROGRAM_FUNC_DEF_LIST: FUNC_DEF . PROGRAM_FUNC_DEF_LIST
+
+    TK_TYPE_VOID   shift, and go to state 1
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    $default  reduce using rule 72 (PROGRAM_FUNC_DEF_LIST)
+
+    TYPE                   go to state 5
+    FUNC_RETURN_TYPE       go to state 6
+    FUNC_DEF               go to state 7
+    PROGRAM_FUNC_DEF_LIST  go to state 12
+
+
+State 8
+
+    0 $accept: PROGRAM . $end
+
+    $end  shift, and go to state 13
+
+
+State 9
+
+   71 PROGRAM: PROGRAM_FUNC_DEF_LIST . PROGRAM_MAIN_FUNC PROGRAM_FUNC_DEF_LIST
+
+    TK_MAIN  shift, and go to state 14
+
+    PROGRAM_MAIN_FUNC  go to state 15
+
+
+State 10
+
+    1 TK_NAME_ID_WRAPPER: TK_NAME_ID .
+
+    $default  reduce using rule 1 (TK_NAME_ID_WRAPPER)
+
+
+State 11
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER . '(' FUNC_PARAM_LIST ')' '{' FUNC_BODY '}'
+   70         | FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER . '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}'
+
+    '('  shift, and go to state 16
+
+
+State 12
+
+   73 PROGRAM_FUNC_DEF_LIST: FUNC_DEF PROGRAM_FUNC_DEF_LIST .
+
+    $default  reduce using rule 73 (PROGRAM_FUNC_DEF_LIST)
+
+
+State 13
+
+    0 $accept: PROGRAM $end .
+
+    $default  accept
+
+
+State 14
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN . '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}'
+   75                  | TK_MAIN . '(' ')' '{' FUNC_BODY '}'
+
+    '('  shift, and go to state 17
+
+
+State 15
+
+   71 PROGRAM: PROGRAM_FUNC_DEF_LIST PROGRAM_MAIN_FUNC . PROGRAM_FUNC_DEF_LIST
+
+    TK_TYPE_VOID   shift, and go to state 1
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    $default  reduce using rule 72 (PROGRAM_FUNC_DEF_LIST)
+
+    TYPE                   go to state 5
+    FUNC_RETURN_TYPE       go to state 6
+    FUNC_DEF               go to state 7
+    PROGRAM_FUNC_DEF_LIST  go to state 18
+
+
+State 16
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' . FUNC_PARAM_LIST ')' '{' FUNC_BODY '}'
+   70         | FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' . TK_TYPE_VOID ')' '{' FUNC_BODY '}'
+
+    TK_TYPE_VOID   shift, and go to state 19
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    TYPE             go to state 20
+    FUNC_PARAM       go to state 21
+    FUNC_PARAM_LIST  go to state 22
+
+
+State 17
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN '(' . TK_TYPE_VOID ')' '{' FUNC_BODY '}'
+   75                  | TK_MAIN '(' . ')' '{' FUNC_BODY '}'
+
+    TK_TYPE_VOID  shift, and go to state 23
+    ')'           shift, and go to state 24
+
+
+State 18
+
+   71 PROGRAM: PROGRAM_FUNC_DEF_LIST PROGRAM_MAIN_FUNC PROGRAM_FUNC_DEF_LIST .
+
+    $default  reduce using rule 71 (PROGRAM)
+
+
+State 19
+
+   70 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' TK_TYPE_VOID . ')' '{' FUNC_BODY '}'
+
+    ')'  shift, and go to state 25
+
+
+State 20
+
+   59 FUNC_PARAM: TYPE . TK_NAME_ID_WRAPPER
+
+    TK_NAME_ID  shift, and go to state 10
+
+    TK_NAME_ID_WRAPPER  go to state 26
+
+
+State 21
+
+   60 FUNC_PARAM_LIST: FUNC_PARAM .
+   61                | FUNC_PARAM . ',' FUNC_PARAM_LIST
+
+    ','  shift, and go to state 27
+
+    $default  reduce using rule 60 (FUNC_PARAM_LIST)
+
+
+State 22
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' FUNC_PARAM_LIST . ')' '{' FUNC_BODY '}'
+
+    ')'  shift, and go to state 28
+
+
+State 23
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN '(' TK_TYPE_VOID . ')' '{' FUNC_BODY '}'
+
+    ')'  shift, and go to state 29
+
+
+State 24
+
+   75 PROGRAM_MAIN_FUNC: TK_MAIN '(' ')' . '{' FUNC_BODY '}'
+
+    '{'  shift, and go to state 30
+
+
+State 25
+
+   70 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' TK_TYPE_VOID ')' . '{' FUNC_BODY '}'
+
+    '{'  shift, and go to state 31
+
+
+State 26
+
+   59 FUNC_PARAM: TYPE TK_NAME_ID_WRAPPER .
+
+    $default  reduce using rule 59 (FUNC_PARAM)
+
+
+State 27
+
+   61 FUNC_PARAM_LIST: FUNC_PARAM ',' . FUNC_PARAM_LIST
+
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    TYPE             go to state 20
+    FUNC_PARAM       go to state 21
+    FUNC_PARAM_LIST  go to state 32
+
+
+State 28
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' FUNC_PARAM_LIST ')' . '{' FUNC_BODY '}'
+
+    '{'  shift, and go to state 33
+
+
+State 29
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN '(' TK_TYPE_VOID ')' . '{' FUNC_BODY '}'
+
+    '{'  shift, and go to state 34
+
+
+State 30
+
+   75 PROGRAM_MAIN_FUNC: TK_MAIN '(' ')' '{' . FUNC_BODY '}'
+
+    error          shift, and go to state 35
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    error           [reduce using rule 64 (FUNC_VAR_DEF_LIST)]
+    TK_CTRL_IF      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_WHILE   reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_RETURN  reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_NAME_ID      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    ';'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    '{'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+
+    TYPE               go to state 36
+    FUNC_VAR_DEF       go to state 37
+    FUNC_VAR_DEF_LIST  go to state 38
+    FUNC_BODY          go to state 39
+
+
+State 31
+
+   70 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' TK_TYPE_VOID ')' '{' . FUNC_BODY '}'
+
+    error          shift, and go to state 35
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    error           [reduce using rule 64 (FUNC_VAR_DEF_LIST)]
+    TK_CTRL_IF      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_WHILE   reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_RETURN  reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_NAME_ID      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    ';'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    '{'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+
+    TYPE               go to state 36
+    FUNC_VAR_DEF       go to state 37
+    FUNC_VAR_DEF_LIST  go to state 38
+    FUNC_BODY          go to state 40
+
+
+State 32
+
+   61 FUNC_PARAM_LIST: FUNC_PARAM ',' FUNC_PARAM_LIST .
+
+    $default  reduce using rule 61 (FUNC_PARAM_LIST)
+
+
+State 33
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' FUNC_PARAM_LIST ')' '{' . FUNC_BODY '}'
+
+    error          shift, and go to state 35
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    error           [reduce using rule 64 (FUNC_VAR_DEF_LIST)]
+    TK_CTRL_IF      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_WHILE   reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_RETURN  reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_NAME_ID      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    ';'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    '{'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+
+    TYPE               go to state 36
+    FUNC_VAR_DEF       go to state 37
+    FUNC_VAR_DEF_LIST  go to state 38
+    FUNC_BODY          go to state 41
+
+
+State 34
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN '(' TK_TYPE_VOID ')' '{' . FUNC_BODY '}'
+
+    error          shift, and go to state 35
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    error           [reduce using rule 64 (FUNC_VAR_DEF_LIST)]
+    TK_CTRL_IF      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_WHILE   reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_RETURN  reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_NAME_ID      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    ';'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    '{'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+
+    TYPE               go to state 36
+    FUNC_VAR_DEF       go to state 37
+    FUNC_VAR_DEF_LIST  go to state 38
+    FUNC_BODY          go to state 42
+
+
+State 35
+
+   63 FUNC_VAR_DEF: error . ';'
+
+    ';'  shift, and go to state 43
+
+
+State 36
+
+   62 FUNC_VAR_DEF: TYPE . TK_NAME_ID_WRAPPER '=' CONST ';'
+
+    TK_NAME_ID  shift, and go to state 10
+
+    TK_NAME_ID_WRAPPER  go to state 44
+
+
+State 37
+
+   65 FUNC_VAR_DEF_LIST: FUNC_VAR_DEF . FUNC_VAR_DEF_LIST
+
+    error          shift, and go to state 35
+    TK_TYPE_INT    shift, and go to state 2
+    TK_TYPE_CHAR   shift, and go to state 3
+    TK_TYPE_FLOAT  shift, and go to state 4
+
+    error           [reduce using rule 64 (FUNC_VAR_DEF_LIST)]
+    TK_CTRL_IF      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_WHILE   reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_CTRL_RETURN  reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    TK_NAME_ID      reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    ';'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+    '{'             reduce using rule 64 (FUNC_VAR_DEF_LIST)
+
+    TYPE               go to state 36
+    FUNC_VAR_DEF       go to state 37
+    FUNC_VAR_DEF_LIST  go to state 45
+
+
+State 38
+
+   68 FUNC_BODY: FUNC_VAR_DEF_LIST . FUNC_STMT_LIST
+
+    error           shift, and go to state 46
+    TK_CTRL_IF      shift, and go to state 47
+    TK_CTRL_WHILE   shift, and go to state 48
+    TK_CTRL_RETURN  shift, and go to state 49
+    TK_NAME_ID      shift, and go to state 10
+    ';'             shift, and go to state 50
+    '{'             shift, and go to state 51
+
+    TK_NAME_ID_WRAPPER  go to state 52
+    STMT                go to state 53
+    STMT_ASSIGN         go to state 54
+    STMT_IF             go to state 55
+    STMT_WHILE          go to state 56
+    STMT_BLOCK          go to state 57
+    STMT_FUNC_CALL      go to state 58
+    STMT_EMPTY          go to state 59
+    STMT_RETURN         go to state 60
+    FUNC_CALL           go to state 61
+    FUNC_STMT_LIST      go to state 62
+
+
+State 39
+
+   75 PROGRAM_MAIN_FUNC: TK_MAIN '(' ')' '{' FUNC_BODY . '}'
+
+    '}'  shift, and go to state 63
+
+
+State 40
+
+   70 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' TK_TYPE_VOID ')' '{' FUNC_BODY . '}'
+
+    '}'  shift, and go to state 64
+
+
+State 41
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' FUNC_PARAM_LIST ')' '{' FUNC_BODY . '}'
+
+    '}'  shift, and go to state 65
+
+
+State 42
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN '(' TK_TYPE_VOID ')' '{' FUNC_BODY . '}'
+
+    '}'  shift, and go to state 66
+
+
+State 43
+
+   63 FUNC_VAR_DEF: error ';' .
+
+    $default  reduce using rule 63 (FUNC_VAR_DEF)
+
+
+State 44
+
+   62 FUNC_VAR_DEF: TYPE TK_NAME_ID_WRAPPER . '=' CONST ';'
+
+    '='  shift, and go to state 67
+
+
+State 45
+
+   65 FUNC_VAR_DEF_LIST: FUNC_VAR_DEF FUNC_VAR_DEF_LIST .
+
+    $default  reduce using rule 65 (FUNC_VAR_DEF_LIST)
+
+
+State 46
+
+   34 STMT: error . ';'
+
+    ';'  shift, and go to state 68
+
+
+State 47
+
+   36 STMT_IF: TK_CTRL_IF . '(' EXPR ')' STMT
+   37        | TK_CTRL_IF . '(' EXPR ')' STMT TK_CTRL_ELSE STMT
+
+    '('  shift, and go to state 69
+
+
+State 48
+
+   38 STMT_WHILE: TK_CTRL_WHILE . '(' EXPR ')' STMT
+
+    '('  shift, and go to state 70
+
+
+State 49
+
+   44 STMT_RETURN: TK_CTRL_RETURN . ';'
+   45            | TK_CTRL_RETURN . EXPR ';'
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+    ';'             shift, and go to state 78
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR                go to state 82
+    EXPR_COMP           go to state 83
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 50
+
+   43 STMT_EMPTY: ';' .
+
+    $default  reduce using rule 43 (STMT_EMPTY)
+
+
+State 51
+
+   39 STMT_BLOCK: '{' . STMT_LIST '}'
+
+    error           shift, and go to state 46
+    TK_CTRL_IF      shift, and go to state 47
+    TK_CTRL_WHILE   shift, and go to state 48
+    TK_CTRL_RETURN  shift, and go to state 49
+    TK_NAME_ID      shift, and go to state 10
+    ';'             shift, and go to state 50
+    '{'             shift, and go to state 51
+
+    '}'  reduce using rule 40 (STMT_LIST)
+
+    TK_NAME_ID_WRAPPER  go to state 52
+    STMT                go to state 88
+    STMT_ASSIGN         go to state 54
+    STMT_IF             go to state 55
+    STMT_WHILE          go to state 56
+    STMT_BLOCK          go to state 57
+    STMT_LIST           go to state 89
+    STMT_FUNC_CALL      go to state 58
+    STMT_EMPTY          go to state 59
+    STMT_RETURN         go to state 90
+    FUNC_CALL           go to state 61
+
+
+State 52
+
+   35 STMT_ASSIGN: TK_NAME_ID_WRAPPER . '=' EXPR ';'
+   49 FUNC_CALL: TK_NAME_ID_WRAPPER . '(' FUNC_ARG_LIST ')'
+   50          | TK_NAME_ID_WRAPPER . '(' ')'
+
+    '('  shift, and go to state 91
+    '='  shift, and go to state 92
+
+
+State 53
+
+   67 FUNC_STMT_LIST: STMT . FUNC_STMT_LIST
+
+    error           shift, and go to state 46
+    TK_CTRL_IF      shift, and go to state 47
+    TK_CTRL_WHILE   shift, and go to state 48
+    TK_CTRL_RETURN  shift, and go to state 49
+    TK_NAME_ID      shift, and go to state 10
+    ';'             shift, and go to state 50
+    '{'             shift, and go to state 51
+
+    TK_NAME_ID_WRAPPER  go to state 52
+    STMT                go to state 53
+    STMT_ASSIGN         go to state 54
+    STMT_IF             go to state 55
+    STMT_WHILE          go to state 56
+    STMT_BLOCK          go to state 57
+    STMT_FUNC_CALL      go to state 58
+    STMT_EMPTY          go to state 59
+    STMT_RETURN         go to state 60
+    FUNC_CALL           go to state 61
+    FUNC_STMT_LIST      go to state 93
+
+
+State 54
+
+   27 STMT: STMT_ASSIGN .
+
+    $default  reduce using rule 27 (STMT)
+
+
+State 55
+
+   28 STMT: STMT_IF .
+
+    $default  reduce using rule 28 (STMT)
+
+
+State 56
+
+   29 STMT: STMT_WHILE .
+
+    $default  reduce using rule 29 (STMT)
+
+
+State 57
+
+   31 STMT: STMT_BLOCK .
+
+    $default  reduce using rule 31 (STMT)
+
+
+State 58
+
+   32 STMT: STMT_FUNC_CALL .
+
+    $default  reduce using rule 32 (STMT)
+
+
+State 59
+
+   33 STMT: STMT_EMPTY .
+
+    $default  reduce using rule 33 (STMT)
+
+
+State 60
+
+   30 STMT: STMT_RETURN .
+   66 FUNC_STMT_LIST: STMT_RETURN .
+
+    '}'       reduce using rule 66 (FUNC_STMT_LIST)
+    $default  reduce using rule 30 (STMT)
+
+
+State 61
+
+   42 STMT_FUNC_CALL: FUNC_CALL . ';'
+
+    ';'  shift, and go to state 94
+
+
+State 62
+
+   68 FUNC_BODY: FUNC_VAR_DEF_LIST FUNC_STMT_LIST .
+
+    $default  reduce using rule 68 (FUNC_BODY)
+
+
+State 63
+
+   75 PROGRAM_MAIN_FUNC: TK_MAIN '(' ')' '{' FUNC_BODY '}' .
+
+    $default  reduce using rule 75 (PROGRAM_MAIN_FUNC)
+
+
+State 64
+
+   70 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}' .
+
+    $default  reduce using rule 70 (FUNC_DEF)
+
+
+State 65
+
+   69 FUNC_DEF: FUNC_RETURN_TYPE TK_NAME_ID_WRAPPER '(' FUNC_PARAM_LIST ')' '{' FUNC_BODY '}' .
+
+    $default  reduce using rule 69 (FUNC_DEF)
+
+
+State 66
+
+   74 PROGRAM_MAIN_FUNC: TK_MAIN '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}' .
+
+    $default  reduce using rule 74 (PROGRAM_MAIN_FUNC)
+
+
+State 67
+
+   62 FUNC_VAR_DEF: TYPE TK_NAME_ID_WRAPPER '=' . CONST ';'
+
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+
+    CONST  go to state 95
+
+
+State 68
+
+   34 STMT: error ';' .
+
+    $default  reduce using rule 34 (STMT)
+
+
+State 69
+
+   36 STMT_IF: TK_CTRL_IF '(' . EXPR ')' STMT
+   37        | TK_CTRL_IF '(' . EXPR ')' STMT TK_CTRL_ELSE STMT
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR                go to state 96
+    EXPR_COMP           go to state 83
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 70
+
+   38 STMT_WHILE: TK_CTRL_WHILE '(' . EXPR ')' STMT
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR                go to state 97
+    EXPR_COMP           go to state 83
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 71
+
+    6 CONST: TK_CONS_INT .
+
+    $default  reduce using rule 6 (CONST)
+
+
+State 72
+
+    8 CONST: TK_CONS_CHAR .
+
+    $default  reduce using rule 8 (CONST)
+
+
+State 73
+
+    7 CONST: TK_CONS_FLOAT .
+
+    $default  reduce using rule 7 (CONST)
+
+
+State 74
+
+    9 CONST: TK_CONS_STRING .
+
+    $default  reduce using rule 9 (CONST)
+
+
+State 75
+
+    5 EXPR_PRIME: '(' . EXPR ')'
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR                go to state 98
+    EXPR_COMP           go to state 83
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 76
+
+   25 EXPR_UNARY: '+' . EXPR_UNARY
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_UNARY          go to state 99
+    FUNC_CALL           go to state 87
+
+
+State 77
+
+   26 EXPR_UNARY: '-' . EXPR_UNARY
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_UNARY          go to state 100
+    FUNC_CALL           go to state 87
+
+
+State 78
+
+   44 STMT_RETURN: TK_CTRL_RETURN ';' .
+
+    $default  reduce using rule 44 (STMT_RETURN)
+
+
+State 79
+
+    3 EXPR_PRIME: TK_NAME_ID_WRAPPER .
+   49 FUNC_CALL: TK_NAME_ID_WRAPPER . '(' FUNC_ARG_LIST ')'
+   50          | TK_NAME_ID_WRAPPER . '(' ')'
+
+    '('  shift, and go to state 91
+
+    $default  reduce using rule 3 (EXPR_PRIME)
+
+
+State 80
+
+   24 EXPR_UNARY: EXPR_PRIME .
+
+    $default  reduce using rule 24 (EXPR_UNARY)
+
+
+State 81
+
+    2 EXPR_PRIME: CONST .
+
+    $default  reduce using rule 2 (EXPR_PRIME)
+
+
+State 82
+
+   45 STMT_RETURN: TK_CTRL_RETURN EXPR . ';'
+
+    ';'  shift, and go to state 101
+
+
+State 83
+
+   10 EXPR: EXPR_COMP .
+   11     | EXPR_COMP . TK_OPER_EQ EXPR_COMP
+   12     | EXPR_COMP . TK_OPER_NEQ EXPR_COMP
+
+    TK_OPER_EQ   shift, and go to state 102
+    TK_OPER_NEQ  shift, and go to state 103
+
+    $default  reduce using rule 10 (EXPR)
+
+
+State 84
+
+   13 EXPR_COMP: EXPR_ADD .
+   14          | EXPR_ADD . '<' EXPR_ADD
+   15          | EXPR_ADD . TK_OPER_LE EXPR_ADD
+   16          | EXPR_ADD . '>' EXPR_ADD
+   17          | EXPR_ADD . TK_OPER_GE EXPR_ADD
+   19 EXPR_ADD: EXPR_ADD . '+' EXPR_ADD
+   20         | EXPR_ADD . '-' EXPR_ADD
+
+    TK_OPER_LE  shift, and go to state 104
+    TK_OPER_GE  shift, and go to state 105
+    '<'         shift, and go to state 106
+    '>'         shift, and go to state 107
+    '+'         shift, and go to state 108
+    '-'         shift, and go to state 109
+
+    $default  reduce using rule 13 (EXPR_COMP)
+
+
+State 85
+
+   18 EXPR_ADD: EXPR_MUL .
+   22 EXPR_MUL: EXPR_MUL . '*' EXPR_UNARY
+   23         | EXPR_MUL . '/' EXPR_UNARY
+
+    '*'  shift, and go to state 110
+    '/'  shift, and go to state 111
+
+    $default  reduce using rule 18 (EXPR_ADD)
+
+
+State 86
+
+   21 EXPR_MUL: EXPR_UNARY .
+
+    $default  reduce using rule 21 (EXPR_MUL)
+
+
+State 87
+
+    4 EXPR_PRIME: FUNC_CALL .
+
+    $default  reduce using rule 4 (EXPR_PRIME)
+
+
+State 88
+
+   41 STMT_LIST: STMT . STMT_LIST
+
+    error           shift, and go to state 46
+    TK_CTRL_IF      shift, and go to state 47
+    TK_CTRL_WHILE   shift, and go to state 48
+    TK_CTRL_RETURN  shift, and go to state 49
+    TK_NAME_ID      shift, and go to state 10
+    ';'             shift, and go to state 50
+    '{'             shift, and go to state 51
+
+    '}'  reduce using rule 40 (STMT_LIST)
+
+    TK_NAME_ID_WRAPPER  go to state 52
+    STMT                go to state 88
+    STMT_ASSIGN         go to state 54
+    STMT_IF             go to state 55
+    STMT_WHILE          go to state 56
+    STMT_BLOCK          go to state 57
+    STMT_LIST           go to state 112
+    STMT_FUNC_CALL      go to state 58
+    STMT_EMPTY          go to state 59
+    STMT_RETURN         go to state 90
+    FUNC_CALL           go to state 61
+
+
+State 89
+
+   39 STMT_BLOCK: '{' STMT_LIST . '}'
+
+    '}'  shift, and go to state 113
+
+
+State 90
+
+   30 STMT: STMT_RETURN .
+
+    $default  reduce using rule 30 (STMT)
+
+
+State 91
+
+   49 FUNC_CALL: TK_NAME_ID_WRAPPER '(' . FUNC_ARG_LIST ')'
+   50          | TK_NAME_ID_WRAPPER '(' . ')'
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    ')'             shift, and go to state 114
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+    '&'             shift, and go to state 115
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR                go to state 116
+    EXPR_COMP           go to state 83
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+    FUNC_ARG_LIST       go to state 117
+    FUNC_ARG_FIRST      go to state 118
+
+
+State 92
+
+   35 STMT_ASSIGN: TK_NAME_ID_WRAPPER '=' . EXPR ';'
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR                go to state 119
+    EXPR_COMP           go to state 83
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 93
+
+   67 FUNC_STMT_LIST: STMT FUNC_STMT_LIST .
+
+    $default  reduce using rule 67 (FUNC_STMT_LIST)
+
+
+State 94
+
+   42 STMT_FUNC_CALL: FUNC_CALL ';' .
+
+    $default  reduce using rule 42 (STMT_FUNC_CALL)
+
+
+State 95
+
+   62 FUNC_VAR_DEF: TYPE TK_NAME_ID_WRAPPER '=' CONST . ';'
+
+    ';'  shift, and go to state 120
+
+
+State 96
+
+   36 STMT_IF: TK_CTRL_IF '(' EXPR . ')' STMT
+   37        | TK_CTRL_IF '(' EXPR . ')' STMT TK_CTRL_ELSE STMT
+
+    ')'  shift, and go to state 121
+
+
+State 97
+
+   38 STMT_WHILE: TK_CTRL_WHILE '(' EXPR . ')' STMT
+
+    ')'  shift, and go to state 122
+
+
+State 98
+
+    5 EXPR_PRIME: '(' EXPR . ')'
+
+    ')'  shift, and go to state 123
+
+
+State 99
+
+   25 EXPR_UNARY: '+' EXPR_UNARY .
+
+    $default  reduce using rule 25 (EXPR_UNARY)
+
+
+State 100
+
+   26 EXPR_UNARY: '-' EXPR_UNARY .
+
+    $default  reduce using rule 26 (EXPR_UNARY)
+
+
+State 101
+
+   45 STMT_RETURN: TK_CTRL_RETURN EXPR ';' .
+
+    $default  reduce using rule 45 (STMT_RETURN)
+
+
+State 102
+
+   11 EXPR: EXPR_COMP TK_OPER_EQ . EXPR_COMP
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_COMP           go to state 124
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 103
+
+   12 EXPR: EXPR_COMP TK_OPER_NEQ . EXPR_COMP
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_COMP           go to state 125
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 104
+
+   15 EXPR_COMP: EXPR_ADD TK_OPER_LE . EXPR_ADD
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_ADD            go to state 126
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 105
+
+   17 EXPR_COMP: EXPR_ADD TK_OPER_GE . EXPR_ADD
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_ADD            go to state 127
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 106
+
+   14 EXPR_COMP: EXPR_ADD '<' . EXPR_ADD
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_ADD            go to state 128
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 107
+
+   16 EXPR_COMP: EXPR_ADD '>' . EXPR_ADD
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_ADD            go to state 129
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 108
+
+   19 EXPR_ADD: EXPR_ADD '+' . EXPR_ADD
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_ADD            go to state 130
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 109
+
+   20 EXPR_ADD: EXPR_ADD '-' . EXPR_ADD
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_ADD            go to state 131
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 110
+
+   22 EXPR_MUL: EXPR_MUL '*' . EXPR_UNARY
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_UNARY          go to state 132
+    FUNC_CALL           go to state 87
+
+
+State 111
+
+   23 EXPR_MUL: EXPR_MUL '/' . EXPR_UNARY
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR_UNARY          go to state 133
+    FUNC_CALL           go to state 87
+
+
+State 112
+
+   41 STMT_LIST: STMT STMT_LIST .
+
+    $default  reduce using rule 41 (STMT_LIST)
+
+
+State 113
+
+   39 STMT_BLOCK: '{' STMT_LIST '}' .
+
+    $default  reduce using rule 39 (STMT_BLOCK)
+
+
+State 114
+
+   50 FUNC_CALL: TK_NAME_ID_WRAPPER '(' ')' .
+
+    $default  reduce using rule 50 (FUNC_CALL)
+
+
+State 115
+
+   52 FUNC_ARG_FIRST: '&' . TK_NAME_ID_WRAPPER
+
+    TK_NAME_ID  shift, and go to state 10
+
+    TK_NAME_ID_WRAPPER  go to state 134
+
+
+State 116
+
+   53 FUNC_ARG_FIRST: EXPR .
+
+    $default  reduce using rule 53 (FUNC_ARG_FIRST)
+
+
+State 117
+
+   49 FUNC_CALL: TK_NAME_ID_WRAPPER '(' FUNC_ARG_LIST . ')'
+
+    ')'  shift, and go to state 135
+
+
+State 118
+
+   51 FUNC_ARG_LIST: FUNC_ARG_FIRST . FUNC_ARG_MORE
+
+    ','  shift, and go to state 136
+
+    $default  reduce using rule 54 (FUNC_ARG_MORE)
+
+    FUNC_ARG_MORE  go to state 137
+
+
+State 119
+
+   35 STMT_ASSIGN: TK_NAME_ID_WRAPPER '=' EXPR . ';'
+
+    ';'  shift, and go to state 138
+
+
+State 120
+
+   62 FUNC_VAR_DEF: TYPE TK_NAME_ID_WRAPPER '=' CONST ';' .
+
+    $default  reduce using rule 62 (FUNC_VAR_DEF)
+
+
+State 121
+
+   36 STMT_IF: TK_CTRL_IF '(' EXPR ')' . STMT
+   37        | TK_CTRL_IF '(' EXPR ')' . STMT TK_CTRL_ELSE STMT
+
+    error           shift, and go to state 46
+    TK_CTRL_IF      shift, and go to state 47
+    TK_CTRL_WHILE   shift, and go to state 48
+    TK_CTRL_RETURN  shift, and go to state 49
+    TK_NAME_ID      shift, and go to state 10
+    ';'             shift, and go to state 50
+    '{'             shift, and go to state 51
+
+    TK_NAME_ID_WRAPPER  go to state 52
+    STMT                go to state 139
+    STMT_ASSIGN         go to state 54
+    STMT_IF             go to state 55
+    STMT_WHILE          go to state 56
+    STMT_BLOCK          go to state 57
+    STMT_FUNC_CALL      go to state 58
+    STMT_EMPTY          go to state 59
+    STMT_RETURN         go to state 90
+    FUNC_CALL           go to state 61
+
+
+State 122
+
+   38 STMT_WHILE: TK_CTRL_WHILE '(' EXPR ')' . STMT
+
+    error           shift, and go to state 46
+    TK_CTRL_IF      shift, and go to state 47
+    TK_CTRL_WHILE   shift, and go to state 48
+    TK_CTRL_RETURN  shift, and go to state 49
+    TK_NAME_ID      shift, and go to state 10
+    ';'             shift, and go to state 50
+    '{'             shift, and go to state 51
+
+    TK_NAME_ID_WRAPPER  go to state 52
+    STMT                go to state 140
+    STMT_ASSIGN         go to state 54
+    STMT_IF             go to state 55
+    STMT_WHILE          go to state 56
+    STMT_BLOCK          go to state 57
+    STMT_FUNC_CALL      go to state 58
+    STMT_EMPTY          go to state 59
+    STMT_RETURN         go to state 90
+    FUNC_CALL           go to state 61
+
+
+State 123
+
+    5 EXPR_PRIME: '(' EXPR ')' .
+
+    $default  reduce using rule 5 (EXPR_PRIME)
+
+
+State 124
+
+   11 EXPR: EXPR_COMP TK_OPER_EQ EXPR_COMP .
+
+    $default  reduce using rule 11 (EXPR)
+
+
+State 125
+
+   12 EXPR: EXPR_COMP TK_OPER_NEQ EXPR_COMP .
+
+    $default  reduce using rule 12 (EXPR)
+
+
+State 126
+
+   15 EXPR_COMP: EXPR_ADD TK_OPER_LE EXPR_ADD .
+   19 EXPR_ADD: EXPR_ADD . '+' EXPR_ADD
+   20         | EXPR_ADD . '-' EXPR_ADD
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    $default  reduce using rule 15 (EXPR_COMP)
+
+
+State 127
+
+   17 EXPR_COMP: EXPR_ADD TK_OPER_GE EXPR_ADD .
+   19 EXPR_ADD: EXPR_ADD . '+' EXPR_ADD
+   20         | EXPR_ADD . '-' EXPR_ADD
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    $default  reduce using rule 17 (EXPR_COMP)
+
+
+State 128
+
+   14 EXPR_COMP: EXPR_ADD '<' EXPR_ADD .
+   19 EXPR_ADD: EXPR_ADD . '+' EXPR_ADD
+   20         | EXPR_ADD . '-' EXPR_ADD
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    $default  reduce using rule 14 (EXPR_COMP)
+
+
+State 129
+
+   16 EXPR_COMP: EXPR_ADD '>' EXPR_ADD .
+   19 EXPR_ADD: EXPR_ADD . '+' EXPR_ADD
+   20         | EXPR_ADD . '-' EXPR_ADD
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    $default  reduce using rule 16 (EXPR_COMP)
+
+
+State 130
+
+   19 EXPR_ADD: EXPR_ADD . '+' EXPR_ADD
+   19         | EXPR_ADD '+' EXPR_ADD .
+   20         | EXPR_ADD . '-' EXPR_ADD
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    '+'       [reduce using rule 19 (EXPR_ADD)]
+    '-'       [reduce using rule 19 (EXPR_ADD)]
+    $default  reduce using rule 19 (EXPR_ADD)
+
+
+State 131
+
+   19 EXPR_ADD: EXPR_ADD . '+' EXPR_ADD
+   20         | EXPR_ADD . '-' EXPR_ADD
+   20         | EXPR_ADD '-' EXPR_ADD .
+
+    '+'  shift, and go to state 108
+    '-'  shift, and go to state 109
+
+    '+'       [reduce using rule 20 (EXPR_ADD)]
+    '-'       [reduce using rule 20 (EXPR_ADD)]
+    $default  reduce using rule 20 (EXPR_ADD)
+
+
+State 132
+
+   22 EXPR_MUL: EXPR_MUL '*' EXPR_UNARY .
+
+    $default  reduce using rule 22 (EXPR_MUL)
+
+
+State 133
+
+   23 EXPR_MUL: EXPR_MUL '/' EXPR_UNARY .
+
+    $default  reduce using rule 23 (EXPR_MUL)
+
+
+State 134
+
+   52 FUNC_ARG_FIRST: '&' TK_NAME_ID_WRAPPER .
+
+    $default  reduce using rule 52 (FUNC_ARG_FIRST)
+
+
+State 135
+
+   49 FUNC_CALL: TK_NAME_ID_WRAPPER '(' FUNC_ARG_LIST ')' .
+
+    $default  reduce using rule 49 (FUNC_CALL)
+
+
+State 136
+
+   55 FUNC_ARG_MORE: ',' . EXPR FUNC_ARG_MORE
+   56              | ',' . '&' TK_NAME_ID_WRAPPER FUNC_ARG_MORE
+
+    TK_NAME_ID      shift, and go to state 10
+    TK_CONS_INT     shift, and go to state 71
+    TK_CONS_CHAR    shift, and go to state 72
+    TK_CONS_FLOAT   shift, and go to state 73
+    TK_CONS_STRING  shift, and go to state 74
+    '('             shift, and go to state 75
+    '+'             shift, and go to state 76
+    '-'             shift, and go to state 77
+    '&'             shift, and go to state 141
+
+    TK_NAME_ID_WRAPPER  go to state 79
+    EXPR_PRIME          go to state 80
+    CONST               go to state 81
+    EXPR                go to state 142
+    EXPR_COMP           go to state 83
+    EXPR_ADD            go to state 84
+    EXPR_MUL            go to state 85
+    EXPR_UNARY          go to state 86
+    FUNC_CALL           go to state 87
+
+
+State 137
+
+   51 FUNC_ARG_LIST: FUNC_ARG_FIRST FUNC_ARG_MORE .
+
+    $default  reduce using rule 51 (FUNC_ARG_LIST)
+
+
+State 138
+
+   35 STMT_ASSIGN: TK_NAME_ID_WRAPPER '=' EXPR ';' .
+
+    $default  reduce using rule 35 (STMT_ASSIGN)
+
+
+State 139
+
+   36 STMT_IF: TK_CTRL_IF '(' EXPR ')' STMT .
+   37        | TK_CTRL_IF '(' EXPR ')' STMT . TK_CTRL_ELSE STMT
+
+    TK_CTRL_ELSE  shift, and go to state 143
+
+    TK_CTRL_ELSE  [reduce using rule 36 (STMT_IF)]
+    $default      reduce using rule 36 (STMT_IF)
+
+
+State 140
+
+   38 STMT_WHILE: TK_CTRL_WHILE '(' EXPR ')' STMT .
+
+    $default  reduce using rule 38 (STMT_WHILE)
+
+
+State 141
+
+   56 FUNC_ARG_MORE: ',' '&' . TK_NAME_ID_WRAPPER FUNC_ARG_MORE
+
+    TK_NAME_ID  shift, and go to state 10
+
+    TK_NAME_ID_WRAPPER  go to state 144
+
+
+State 142
+
+   55 FUNC_ARG_MORE: ',' EXPR . FUNC_ARG_MORE
+
+    ','  shift, and go to state 136
+
+    $default  reduce using rule 54 (FUNC_ARG_MORE)
+
+    FUNC_ARG_MORE  go to state 145
+
+
+State 143
+
+   37 STMT_IF: TK_CTRL_IF '(' EXPR ')' STMT TK_CTRL_ELSE . STMT
+
+    error           shift, and go to state 46
+    TK_CTRL_IF      shift, and go to state 47
+    TK_CTRL_WHILE   shift, and go to state 48
+    TK_CTRL_RETURN  shift, and go to state 49
+    TK_NAME_ID      shift, and go to state 10
+    ';'             shift, and go to state 50
+    '{'             shift, and go to state 51
+
+    TK_NAME_ID_WRAPPER  go to state 52
+    STMT                go to state 146
+    STMT_ASSIGN         go to state 54
+    STMT_IF             go to state 55
+    STMT_WHILE          go to state 56
+    STMT_BLOCK          go to state 57
+    STMT_FUNC_CALL      go to state 58
+    STMT_EMPTY          go to state 59
+    STMT_RETURN         go to state 90
+    FUNC_CALL           go to state 61
+
+
+State 144
+
+   56 FUNC_ARG_MORE: ',' '&' TK_NAME_ID_WRAPPER . FUNC_ARG_MORE
+
+    ','  shift, and go to state 136
+
+    $default  reduce using rule 54 (FUNC_ARG_MORE)
+
+    FUNC_ARG_MORE  go to state 147
+
+
+State 145
+
+   55 FUNC_ARG_MORE: ',' EXPR FUNC_ARG_MORE .
+
+    $default  reduce using rule 55 (FUNC_ARG_MORE)
+
+
+State 146
+
+   37 STMT_IF: TK_CTRL_IF '(' EXPR ')' STMT TK_CTRL_ELSE STMT .
+
+    $default  reduce using rule 37 (STMT_IF)
+
+
+State 147
+
+   56 FUNC_ARG_MORE: ',' '&' TK_NAME_ID_WRAPPER FUNC_ARG_MORE .
+
+    $default  reduce using rule 56 (FUNC_ARG_MORE)

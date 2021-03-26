@@ -1,5 +1,6 @@
 
 #include "AST.h"
+#include "string.h"
 
 static const char TK_TYPE_DETAIL[64][32] = 
 {
@@ -187,7 +188,7 @@ Node* mergeChildren(Node* node, Node* node_children)
 
         // free(node_children);
 }
-Node* pushChild(Node* node, Node* child)
+Node* pushAsChild(Node* node, Node* child)
 {
         if (node->childNum + 1 >= OPRAND_NUM_MAX)
         {
@@ -209,4 +210,10 @@ Node* pushChild(Node* node, Node* child)
 
         return node;
 }
+
+int ptncmp(Node* node, char* str)
+{
+        return strcmp(node->pattern, str);
+}
+
 

@@ -6,6 +6,7 @@
 #include "../lexer/lexer.h"
 #include "../parser/AST.h"
 #include "production_checker.h"
+#include "symbol_table.h"
 
 #include <string.h>
 
@@ -54,7 +55,7 @@ static const char TK_TYPE_DETAIL[64][32] =
     "TK_ERR"
 };
 
-
+extern SymbolTable* st;
 
 int main(int argc, char* argv[])
 {
@@ -67,9 +68,9 @@ int main(int argc, char* argv[])
 
     if (yyparse() == 0)
     {
-        printf("\033[0;32m"); 
-        printf("\nParse succeeded!\n\n"); 
-        printf("\033[0m"); 
+        fprintf(stderr, "\033[0;32m"); 
+        fprintf(stderr, "\nParse succeeded!\n\n"); 
+        fprintf(stderr, "\033[0m"); 
     }
     else
     {
@@ -80,10 +81,13 @@ int main(int argc, char* argv[])
 
     printf("AST:\n");
     printTree(root, 0);
+    printf("\n");
 
-
-    init_st();
+    st = init_st();
+    check_tree(root);
     
+    printf("Symbol table %d: \n", st->length);
+    table_print(st);
 
 
     return 0;

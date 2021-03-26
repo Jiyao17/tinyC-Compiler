@@ -1,0 +1,39 @@
+int do_addition(int e, int f)
+{
+    if (e == 0)
+        return b;
+    if (f == 0)
+        return a;
+    
+    return (e+f);
+}
+
+
+int main(void)
+{
+    int c = 0;
+    int d = 0;
+    
+
+    printf("please input two integer values separated by whitespace:\n");
+    scanf("%d %d", &a, &b);
+
+    c = do_addition(a, b);
+
+    c > 1;
+
+    printf("%d + %d = %d \n", a, b, c);
+
+    return 0;
+}
+
+
+int do_subduction(int a, int b)
+{
+    if (a == 0)
+        return b*(-1);
+    if (b == 0)
+        return a;
+    
+    return (a-b);
+}

@@ -1,7 +1,7 @@
 
 Prerequisits
 ================================
-gcc make lex yacc 
+gcc make lex yacc (optionally cat)
 
 Steps to run
 ================================
@@ -11,7 +11,11 @@ Steps to run
     If the executable does not exist, please make using cmd: make
     Test codes should be in the file: code.tinyc
     Outputs about errors are not in the file: output, but in the terminal
-
+3.  Normally, outputs in the terminal are like:
+    sytax errors messages
+    Parse succeeded!
+    semantic errors messages
+    
 
 
 if partial points applicable
@@ -19,8 +23,9 @@ if partial points applicable
 Detectable errors:
 1.  Invalid statements, like "a > 1;".
 2.  Invalid variable definition, like "int a = b;".
-3.  Undefined variables. (But all variables are global, including parameters of functions.)
-4.  Undefined functions, exclude "printf" and "scanf".
+3.  Undefined variables in assignment statement.
+4.  But currently all variables are global, including parameters of functions.
+5.  Undefined functions, exclude "printf" and "scanf".
 
 The program can print the AST and symbol table.
 To see them in the terminal, run cmd: cat output
@@ -36,6 +41,6 @@ AST:
 
 Symbol Table:
     Detect all functions and variables defined.
-    Parameters of functions are also included (currently, as global variables).
-    All variables are global.
+    Parameters of functions are also included.
+    All variables in the symbol table are global.
 

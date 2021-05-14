@@ -13,7 +13,7 @@ enum yytokentype token_type;
 
 letter [A-Za-z]
 nzdigit [1-9]
-digit (0|nzdigit)
+digit [0-9]
 sign [:\.'\"\%\{\}\(\)_\+\-\*\/=\<\>!& ]
 escape ("\\\\"|"\\'"|"\\\""|"\\n"|"\\t")
 unletter ({letter}|_)
@@ -26,7 +26,7 @@ keyword ({data_type}|{control}|"void")
 
 identifier {unletter}({unletter}|{digit})*
 
-integer "0"|{nzdigit}{digit}*
+integer ("0"|({nzdigit}({digit})*))
 float {digit}+"."{digit}+
 char "'"({letter}|{digit}|{sign}|{escape})"'"
 string \"(([^\"\n\\])|{escape})*\"

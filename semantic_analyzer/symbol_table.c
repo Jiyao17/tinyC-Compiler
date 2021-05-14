@@ -32,12 +32,24 @@ int table_insert(SymbolTable* symbol_table, Symbol* symbol)
     }
 }
 
-int table_find(SymbolTable* symbol_table, char* symbol_name)
-{
+int table_find(SymbolTable* symbol_table, char* symbol_name, char* scope)
+{   
     for (int i = 0; i < symbol_table->length; i++)
     {
-        if(strcmp((symbol_table->table)[i]->name, symbol_name) == 0)
-        return i;
+        int same_name = strcmp((symbol_table->table)[i]->name, symbol_name) == 0 ? 1 : 0;
+        if (same_name == 1)
+        {
+            // find func
+            if ((symbol_table->table)[i]->type == 2 && scope == NULL)
+                return i;
+            // find var
+            else
+            {
+                int same_scope = strcmp((symbol_table->table)[i]->scope, scope) == 0 ? 1 : 0;
+                if( same_scope == 1)
+                    return i;
+            }
+        }        
     }
     
     return -1;
@@ -47,7 +59,7 @@ int symbol_print(Symbol* symbol)
 {
     if(symbol->type == 1)
     {
-        printf("Variable: %s %s\n", symbol->subtype, symbol->name);
+        printf("Variable: %s %s %s %d\n", symbol->subtype, symbol->name, symbol->scope, symbol->pos);
     }
     else if(symbol->type == 2)
     {

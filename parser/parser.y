@@ -83,7 +83,7 @@ int yydebug = 1;
 %token    TK_TYPE_VOID TK_TYPE_INT TK_TYPE_CHAR TK_TYPE_FLOAT
 // control keyword
 %token    TK_CTRL_IF TK_CTRL_ELSE TK_CTRL_WHILE TK_CTRL_RETURN TK_MAIN
-// constant
+// oprand
 %token    TK_NAME_ID TK_CONS_INT TK_CONS_CHAR TK_CONS_FLOAT TK_CONS_STRING
 // operators
 %token    TK_OPER_ADD TK_OPER_SUB TK_OPER_MUL TK_OPER_DIV
@@ -135,13 +135,13 @@ EXPR_COMP:        EXPR_ADD { $$ = $1;}
                 ;
 
 EXPR_ADD:         EXPR_MUL { $$ = $1;}
-                | EXPR_ADD '+' EXPR_ADD { $$ = makeNode3("EXPR_ADD", 1, $1, makeLeaf("!=", 272), $3); }
-                | EXPR_ADD '-' EXPR_ADD { $$ = makeNode3("EXPR_ADD", 2, $1, makeLeaf("!=", 273), $3); }
+                | EXPR_ADD '+' EXPR_ADD { $$ = makeNode3("EXPR_ADD", 1, $1, makeLeaf("+", 272), $3); }
+                | EXPR_ADD '-' EXPR_ADD { $$ = makeNode3("EXPR_SUB", 2, $1, makeLeaf("-", 273), $3); }
                 ;
 
 EXPR_MUL:         EXPR_UNARY { $$ = $1;}
                 | EXPR_MUL '*' EXPR_UNARY { $$ = makeNode2("EXPR_MUL", 1, $1, $3); }
-                | EXPR_MUL '/' EXPR_UNARY { $$ = makeNode2("EXPR_MUL", 2, $1, $3); }
+                | EXPR_MUL '/' EXPR_UNARY { $$ = makeNode2("EXPR_DIV", 2, $1, $3); }
                 ;
 
 EXPR_UNARY:       EXPR_PRIME { $$ = $1;}
@@ -167,6 +167,7 @@ STMT:     STMT_ASSIGN { $$ = $1;}
 STMT_ASSIGN:      TK_NAME_ID_WRAPPER '=' EXPR ';' { $$ = makeNode2("STMT_ASSIGN", 0, $1, $3);}
                 ;
 
+
 STMT_IF:  TK_CTRL_IF '(' EXPR ')'  STMT { $$ = makeNode2("STMT_IF", 0, $3, $5);}
         | TK_CTRL_IF '(' EXPR ')' STMT TK_CTRL_ELSE STMT { $$ = makeNode3("STMT_IF", 1, $3, $5, $7);}
         ;
@@ -178,12 +179,15 @@ STMT_BLOCK:       '{' STMT_LIST '}' { $$ = makeNode1("STMT_BLOCK", 0, $2);}
                 ;
 STMT_LIST:        { $$ = makeLeaf("STMT_LIST empty", 1); } 
                 | STMT STMT_LIST { 
-                        if(ptncmp($2, "STMT_LIST") != 0)
+                        if(ptncmp($2, "STMT_LIST empty") == 0)
                         {
-                                $$ = makeNode1("STMT_LIST", 1, $2);
+                                $$ = makeNode1("STMT_LIST", 1, $1);
+                        }
+                        else
+                        {
+                                $$ = pushAsChild($2, $1);
                         }
                         
-                        $$ = pushAsChild($2, $1);
                         }
 
 
@@ -281,7 +285,7 @@ PROGRAM_FUNC_DEF_LIST:    { $$ = makeLeaf("PROGRAM_FUNC_DEF_LIST", 1); }
                         ;
 
 PROGRAM_MAIN_FUNC:        TK_MAIN '(' TK_TYPE_VOID ')' '{' FUNC_BODY '}' {
-                                $$ = makeNode3("PROGRAM_MAIN_FUNC", 0, makeLeaf("int main", 266), makeLeaf("void", 258), $6);
+                                $$ = makeNode2("PROGRAM_MAIN_FUNC", 0, makeLeaf("int main", 266), $6);
                                 }
                         | TK_MAIN '(' ')' '{' FUNC_BODY '}' {
                                 $$ = makeNode2("PROGRAM_MAIN_FUNC", 1, makeLeaf("int main", 266), $5);

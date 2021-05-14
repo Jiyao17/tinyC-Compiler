@@ -1,46 +1,22 @@
 
 Prerequisits
 ================================
-gcc make lex yacc (optionally cat)
+gcc make lex yacc
 
 Steps to run
 ================================
-1.  get into the directory: semantic_analyzer
+1.  RUN: ./cc test.tinyc test.s
+    INPUT: test code should be in the file indicated by the first argument.
+    OUTPUT: assemly code generated is in the file indicated by the second argument.
 
-2.  run cmd: ./semantic_analyzer code.tinyc output >output
-    If the executable does not exist, please make using cmd: make
-    Test codes should be in the file: code.tinyc
-    Outputs about errors are not in the file: output, but in the terminal
-3.  Normally, outputs in the terminal are like:
-    sytax errors messages
-    Parse succeeded!
-    semantic errors messages
+    MAKE: if the executable does NOT exist, please make using cmd: make
+
+2.  to verify the assembly code using gcc, please run the following cmd:
+    gcc test.s -o test
+    ./test
+
+    Notice: the assembly code file fed to gcc shoud have .s extension name,
+	    or gcc is not able to recongnize it.
     
 
-
-if partial points applicable
-====================================
-Detectable errors:
-1.  Invalid statements, like "a > 1;".
-2.  Invalid variable definition, like "int a = b;".
-3.  Undefined variables in assignment statement.
-4.  But currently all variables are global, including parameters of functions.
-5.  Undefined functions, exclude "printf" and "scanf".
-
-The program can print the AST and symbol table.
-To see them in the terminal, run cmd: cat output
-Symbol table is in the last several lines, and AST is above.
-
-AST:
-    Nodes are named by their productions.
-    Children of a node are indented. 
-    Siblings are with the same number of spaces.
-    Empty node may exists due to some productions.
-    Nodes are followed by the number of its children.
-    Leaves are followed by its value.
-
-Symbol Table:
-    Detect all functions and variables defined.
-    Parameters of functions are also included.
-    All variables in the symbol table are global.
 

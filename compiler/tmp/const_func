@@ -1,0 +1,10 @@
+.LC0:
+	.string	"Please enter one integer:\n"
+.LC1:
+	.string	"%d"
+.LC2:
+	.string	"You entered a value greater than 10.\n"
+.LC3:
+	.string	"You entered a value not greater than 10.\n"
+
+

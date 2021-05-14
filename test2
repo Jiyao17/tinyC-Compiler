@@ -1,0 +1,9 @@
+
+int main(void)
+{
+
+prinitf("hello world!");
+
+return 0;
+
+}

@@ -10,7 +10,7 @@ y.tab.o: parser.y
 AST.o:
 	gcc -c AST.c -o AST.o	
 
-parser_tester: parser_tester.o y.tab.o lexer.o 
+parser_tester: parser_tester.o y.tab.o lexer.o AST.o
 	gcc $^ -o $@
 
 parser_tester.o: parser_tester.c
@@ -22,5 +22,6 @@ lexer.o:
 
 .PHONY: clean
 clean:
+	make -C ../lexer clean
 	rm -f y.tab.* *.o parser_tester
 	

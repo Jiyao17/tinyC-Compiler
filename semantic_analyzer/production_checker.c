@@ -20,6 +20,7 @@ int check_FUNC_DEF(Node* node)
     }
 
     Symbol* symbol = (Symbol*) malloc(sizeof(Symbol));
+    st->current_scope = node->children[1]->pattern;
 
     symbol->type = 2;
     symbol->return_type = node->children[0]->pattern;
@@ -33,6 +34,7 @@ int check_FUNC_DEF(Node* node)
     
         Symbol* varSymbol = (Symbol*) malloc(sizeof(Symbol));
         varSymbol->type = 1;
+        varSymbol->scope = st->current_scope;
         varSymbol->subtype = symbol->var_type[i];
         varSymbol->name = symbol->var_name[i];
     
@@ -54,6 +56,7 @@ int check_FUNC_VAR_DEF(Node* node)
     Symbol* symbol = (Symbol*) malloc(sizeof(Symbol));
 
     symbol->type = 1;
+    symbol->scope = st->current_scope;
     symbol->subtype = node->children[0]->pattern;
     symbol->name = node->children[1]->pattern;
     
@@ -73,7 +76,7 @@ int check_STMT_ASSIGN(Node* node)
     
     // printf("checking: %s...\n", left->pattern);
 
-    if (table_find(st, leftVarName) == -1)
+    if (table_find(st, leftVarName,st->current_scope) == -1)
         fprintf(stderr, "Semantic error: variable %s is not defined before use.\n", leftVarName);
 
     
@@ -92,12 +95,17 @@ int check_FUNC_CALL(Node* node)
     
     // printf("checking: %s...\n", left->pattern);
 
-    if (table_find(st, funcName) == -1)
+    if (table_find(st, funcName, NULL) == -1)
     {
         if(strcmp(funcName, "printf") != 0 && strcmp(funcName, "scanf") != 0)
             fprintf(stderr, "Semantic error: function %s is not defined before use.\n", funcName);
     }
 
+}
+
+int check_PROGRAM_MAIN_FUNC(Node* node)
+{
+    st->current_scope = "main";
 }
 
 // check the single production
@@ -112,10 +120,12 @@ int check_production(Node* node)
         return check_STMT_ASSIGN(node);
     if (strcmp(node->pattern, "FUNC_CALL") == 0)
         return check_FUNC_CALL(node);
+    if (strcmp(node->pattern, "PROGRAM_MAIN_FUNC") == 0)
+        return check_PROGRAM_MAIN_FUNC(node);
 }
 
 
-// check AST rooted at node recursively
+// check AST recursively
 int check_tree(Node* node)
 {
     check_production(node);

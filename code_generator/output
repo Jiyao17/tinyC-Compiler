@@ -1,0 +1,6 @@
+
+.LC0:
+	.string "Value a: %d\n"
+
+	.global main
+main:

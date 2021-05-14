@@ -1,0 +1,24 @@
+
+
+int main()
+{
+    int a = 0;
+    int sum = 0;
+
+    printf("Enter an integer:\n");
+    scanf("%d", &a);
+
+    
+    while(a > 0)
+    {
+        sum = sum + a;
+
+        a = a - 1;
+    }
+
+    printf("The sum of numbers from 1 to the integer is %d\n", sum);
+    
+    return;
+
+
+}

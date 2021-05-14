@@ -2,6 +2,8 @@
     "files.associations": {
         "string.h": "c",
         "y.tab.h": "c",
-        "symbol_table.h": "c"
+        "symbol_table.h": "c",
+        "production_checker.h": "c",
+        "code_generator.h": "c"
     }
 }
